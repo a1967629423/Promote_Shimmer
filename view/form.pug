@@ -1,0 +1,11 @@
+extends ./base/layout.pug
+
+block header
+    title 表单填写
+block main
+    if userInfo.is_login
+        h1 登陆了
+    else
+        h1 未登录
+        script.
+            wechatGetway.login();

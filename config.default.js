@@ -1,0 +1,32 @@
+module.exports = {
+  "mysql": {
+    dialect: "mysql",
+    host: "localhost",
+    database: "promote_dev",
+    username: "root",
+    password: "",
+  },
+  listen: {
+    port: Number(process.env.PORT) || 7567,
+    host: process.env.HOST || "127.0.0.1",
+    trusted: ["loopback"], // http://expressjs.com/en/guide/behind-proxies.html
+  },
+  webSideRootPath:'/',
+  uploadImagePath:'image/',
+  uploadAudioPath:'audio/',
+  uploadbucketName:'public',
+  minioUrl:'https://shimmer.neusoft.edu.cn',
+  cors: {
+    origin: [
+      /weixin\.qq\.com$/,
+      /localhost(?:\:\d+)?$/,
+      /127\.0\.0\.1(?:\:\d+)?$/,
+    ],
+    methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-BIZ-Agent', 'X-BIZ-Token', 'X-TT-TOKEN', 'X-BIZ-AGENT-AUTH', 'X-WECHAT-ID', 'X-Admin-Token'],
+    exposedHeaders: [],
+    credentials: true,
+    maxAge: 86400,
+    optionsSuccessStatus: 200,
+  },
+}
