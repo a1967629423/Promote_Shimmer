@@ -9,6 +9,8 @@ export interface LiveAddress {
 @Table({modelName:"User"})
 export class User extends Model<User> {
     @Column({type:Sequelize.STRING})
+    name:string
+    @Column({type:Sequelize.STRING})
     nickName:string
     @Column({type:Sequelize.STRING})
     openId:string

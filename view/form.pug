@@ -5,6 +5,7 @@ block header
 block main
     if userInfo.is_login
         h1 登陆了
+        h2 您好 #{userInfo.nickname} #{userInfo.sex==1?'先生':'女士'}
     else
         h1 未登录
         script.
