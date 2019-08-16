@@ -3,8 +3,16 @@ var less = require('gulp-less');
 var uglify = require('gulp-uglify-es').default;
 function watch(done)
 {
-  gulp.watch(['static/script/*.js', 'static/style/*.css', 'static/style/*.less'],(done)=>{
-    gulp.parallel(_default)(done);
+  gulp.watch(['static/script/*.js','static/script/**/*.js'],(done)=>{
+    gulp.parallel(script)(done)
+  });
+  gulp.watch(['static/style/*.css','static/style/*.less'],(done)=>{
+    gulp.parallel(_less)(done)
+  });
+  gulp.watch(['static/images/*.*',
+  'static/images/**/*.*', 
+  'static/favicon.ico'],(done)=>{
+    gulp.parallel(move_static)(done);
   })
   done();
 }
@@ -16,11 +24,20 @@ function script(done)
 }
 function _less(done)
 {
-  return gulp.src(['static/style/*.less'])
-  .pipe(less())
-  .pipe(gulp.dest('public/style')).once('finish',()=>{
-    done()
-  });
+  Promise.all([new Promise((res)=>{
+    gulp.src(['static/style/*.less','static/style/**/*.less'])
+    .pipe(less())
+    .pipe(gulp.dest('public/style')).once('finish',()=>{
+      res()
+    });
+  }),new Promise((res)=>{
+    gulp.src(['static/style/*.css','static/style/**/*.css'])
+    .pipe(gulp.dest('public/style')).once('finish',()=>{
+      res();
+    })
+  })]).then(v=>{
+    done();
+  })
 }
 function move_static(done)
 {
