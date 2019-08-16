@@ -3,4 +3,18 @@ extends ./base/layout.pug
 block header
     title 海报生成
 block main
-    h1 Hello World
+    .poster-container
+        .editor-container
+            canvas#editor
+    script.
+        $(function(){
+            var qrUrl = '#{qr.url}';
+            var qrImg = new Image();
+            var editor  = $('#editor')[0]
+            var ctx = editor.getContext('2d')
+            qrImg.src = qrUrl;
+            qrImg.onload = function(){
+            
+            ctx.drawImage(qrImg,0,0,40,40);
+        }
+        })
