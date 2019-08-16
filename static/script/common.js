@@ -40,15 +40,24 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
     }
   }
   var State = function (name = 'newState', option) {
-    this.on = function (event, cb) {
-      if (event && typeof event === 'string') {
-        this[event] = cb;
-      }
-    }
     this.name = name;
     if (option && typeof option === 'object') {
       for (var key in option) {
         this.on(key, option[key]);
+      }
+    }
+  }
+  State.prototype = {
+    constructor:State,
+    start:function(){
+
+    },
+    quit:function(){
+
+    },
+    on:function (event, cb) {
+      if (event && typeof event === 'string') {
+        this[event] = cb;
       }
     }
   }
@@ -176,10 +185,11 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
     }
     function toScreenCoord(point,screenCoord)
     {
-      if(point.clientX||point.touches)
+      if(point.clientX||(point.touches&&point.touches.length>0)||(point.changedTouches&&point.changedTouches.length>0))
       {
-        var clientX = point.clientX?point.clientX:point.touches?point.touches[0].clientX:0;
-        var clientY = point.clientY?point.clientY:point.touches?point.touches[0].clientY:0;
+        var cursor = point.clientX?point:point.touches&&point.touches.length>0?point.touches[0]:point.changedTouches&&point.changedTouches.length>0?point.changedTouches[0]:null;
+        var clientX = cursor.clientX;
+        var clientY = cursor.clientY;
         screenCoord.x = (clientX/window.innerWidth)*2-1;
         screenCoord.y = -(clientY/window.innerHeight)*2+1;
         return screenCoord;
