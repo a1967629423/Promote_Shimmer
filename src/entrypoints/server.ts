@@ -36,7 +36,7 @@ useExpressServer(app,{
 const sequelize = new Sequelize({
     dialect:configService.config.mysql.dialect,
     host:configService.config.mysql.host,
-    database:configService.config.database,
+    database:configService.config.mysql.database,
     username:configService.config.mysql.username,
     password:configService.config.mysql.password,
     modelPaths:[path.join(__dirname,'../models')]

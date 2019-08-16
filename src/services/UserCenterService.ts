@@ -13,7 +13,7 @@ type UserInfo_Success =
     /**
      * The value of 1 is male and the value of 2 is female
      */
-    sex:number
+    sex:1|2
 } & api
 type  UserInfo_Fail =
 {
@@ -37,11 +37,12 @@ export class UserCenterService
             .then(res=>res.json()).then((v:UserInfo|undefined)=>{
                 if(v&&v.success)
                 {
-                    if(v.is_login)
-                    {
-                        //do something
-                    }
-                    res(v)
+                    // if(v.is_login)
+                    // {
+                    //     //do something
+                    // }
+                    // res(v)
+                    res({success:true,is_login:true,openid:'123',unionid:'56',nickname:'a',headimgurl:'a',sex:1});
                 }
                 else
                 {

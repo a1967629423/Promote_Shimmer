@@ -1,6 +1,8 @@
-import {Controller,Get,Render, Req, Res, CookieParam} from 'routing-controllers'
+import {Controller,Get,Render, Req, Res, CookieParam} from 'routing-controllers';
 import { UserCenterService } from '../../services/UserCenterService';
+import {ConfigService} from '../../services/ConfigService';
 import Container from 'typedi'
+import qrcode from 'qrcode'
 @Controller()
 export class PageController {
     @Get('/')
@@ -25,6 +27,13 @@ export class PageController {
     @Render('poster')
     async posterPage(@CookieParam('wechat_token') wechat_token:string) {
         let userInfo =  await Container.get(UserCenterService).getUserInfo(wechat_token);
+        let fullurl = Container.get(ConfigService).config.webSideFullUrl;
+        let qr={url:''}
+        if(userInfo.is_login)
+        {
+            qr.url = await qrcode.toDataURL(`${fullurl}/form?vendor=${userInfo.unionid}`)
+            return {userInfo,qr}
+        }
         return {userInfo}
     }
 
