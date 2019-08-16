@@ -4,7 +4,7 @@ var uglify = require('gulp-uglify-es').default;
 function watch(done)
 {
   gulp.watch(['static/script/*.js', 'static/style/*.css', 'static/style/*.less'],(done)=>{
-    gulp.series(_default)(done);
+    gulp.parallel(_default)(done);
   })
   done();
 }
@@ -33,12 +33,12 @@ function move_static(done)
 }
 function _default(done)
 {
-  gulp.series(script,_less,move_static)()
+  gulp.parallel(script,_less,move_static)()
   if(done && typeof done === 'function')done();
 }
 function _dev()
 {
-  gulp.series(_default,watch)()
+  gulp.parallel(_default,watch)()
   if(done && typeof done === 'function')done();
 }
 exports.default = _default;
