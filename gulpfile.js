@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var less = require('gulp-less');
 var uglify = require('gulp-uglify-es').default;
+const babel = require('gulp-babel');
 function watch(done)
 {
   gulp.watch(['static/script/*.js','static/script/**/*.js'],(done)=>{
@@ -19,6 +20,7 @@ function watch(done)
 function script(done)
 {
   return gulp.src(['static/script/*.js','static/script/**/*.js'])
+  .pipe(babel({presets:['@babel/env']}).on('error',console.error))
   .pipe(uglify().on('error', console.error))
   .pipe(gulp.dest('public/script/')).once('finish',()=>{done()})
 }

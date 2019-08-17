@@ -9,11 +9,13 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
     }
   }
   function mix(a, b) {
+    a = a || {};
     for (var key in b) {
       if (!a[key]) {
         a[key] = b[key];
       }
     }
+    return a;
   }
   var StateMachine = function () {
     this.nowState = null;
@@ -25,7 +27,7 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
     }
     this.emit = function (e, ...arg) {
       if (this.nowState[e] && typeof this.nowState[e] === 'function') {
-        this.nowState[e]();
+        this.nowState[e](...arg);
       }
     }
     this.createState = function (name = 'newState', option) {
@@ -48,185 +50,54 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
     }
   }
   State.prototype = {
-    constructor:State,
-    start:function(){
+    constructor: State,
+    context: { changeState() { } },
+    start() {
 
     },
-    quit:function(){
+    quit() {
 
     },
-    on:function (event, cb) {
+    on(event, cb) {
       if (event && typeof event === 'string') {
         this[event] = cb;
       }
     }
   }
-  var PictureEditor = function (canvas) {
-    var width = canvas.offsetWidth;
-    var height = canvas.offsetHeight;
-    var events = []
-    var self = this;
-    var mouse = new THREE.Vector2();
-    this.canvas = canvas;
-    this.Scene = new THREE.Scene();
-    this.Camera = new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2);
-    this.Camera.position.z = 1000;
-    this.Camera.lookAt(new THREE.Vector3(0, 0, 0))
-    this.Renderer = new THREE.WebGLRenderer({ canvas: canvas });
-    this.Renderer.setClearColor(new THREE.Color(0xffffff))
-    this.clock = new THREE.Clock();
-    this.idCursor = 0;
-    this.imgs = [];
-    this.sm = new StateMachine();
-    this.smStates = {};
-    this.init = function()
-    {
-      this.initSm();
-    }
-    this.initSm = function()
-    {
-      this.smStates = {
-        default:this.sm.createDefaultState('default',{}),
-      }
-    }
-    
-    this.on = function (event, listener) {
-      var cbs = [];
-      if (events.length === 0) {
-        events.push({ en: events, cb: cbs });
-      }
-      else {
-        for (var i = 0; i < events.length; i++) {
-          if (events[i].en === event) {
-            cbs = events[i].cb;
-            break;
-          }
-          if (i === events.length - 1) {
-            events.push({ en: events, cb: cbs });
-          }
-        }
-      }
-      cbs.push(listener);
-    }
-    this.emit = function (event, ...args) {
-      var e = events.find(function (v) { return v.en === events });
-      if (e) {
-        e.cb.forEach(function (v) {
-          if (v && typeof v === 'function') v(...args);
-        })
-      }
-    }
-    this.onSizeChange = function () {
-      var width = canvas.offsetWidth;
-      var height = canvas.offsetHeight;
-      this.Camera.left = width / -2;
-      this.Camera.right = width / 2;
-      this.Camera.top = height / 2;
-      this.Camera.bottom = height / -2;
-      this.Camera.updateProjectionMatrix();
-      this.Renderer.setSize(width, height, false);
-    }
-    this.onSizeChange();
-    window.addEventListener('resize', this.onSizeChange.bind(this));
-    this.Render = function () {
-      this.Renderer.render(this.Scene, this.Camera);
-    }
-    this.Logic = function () {
-
-    }
-    this.Frame = function () {
-      self.Render();
-      self.Logic();
-      requestAnimationFrame(self.Frame)
-    }
-    this.addImg = function (Img) {
-      var planeGeometry = new THREE.PlaneBufferGeometry(Img.image.width, Img.image.height);
-      var basicMaterial = new THREE.MeshBasicMaterial({ map: Img, side: THREE.DoubleSide });
-      var mesh = new THREE.Mesh(planeGeometry, basicMaterial);
-      mesh.rotation.z = Math.PI / 2;
-      window.imgs = this.imgs
-      this.imgs.push({ source: Img, obj: mesh, id: this.idCursor++ });
-      this.Scene.add(mesh);
-    }
-    this.removeImg = function (id) {
-      for (var i = this.imgs.length - 1; i > -1; i--) {
-        if (this.imgs[i].id === id) {
-          this.Scene.remove(this.imgs.splice(i, 1)[0].obj);
-          return;
-        }
-      }
-    }
-    function pointTest(point) {
-      var raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(point, self.Camera);
-      var intersects = raycaster.intersectObjects(self.Scene.children);
-      var intersectImgs = []
-      for (var i = 0; i < intersects.length; i++) {
-        var img = self.imgs.find(v => v.obj === intersects[i].object);
-        if (img) {
-          intersectImgs.push(img);
-        }
-      }
-      return intersectImgs;
-    }
-    function pointUp(point)
-    {
-      self.sm.emit('pointUp',point);
-      self.emit('pointMove',point);
-    }
-    function pointMove(point) {
-      self.sm.emit('pointMove',point);
-      self.emit('pointMove',point);
-    }
-    function pointDonw(point) {
-      var intersectImgs = pointTest(point);
-      self.sm.emit('pointDown',intersectImgs);
-      self.emit('pointDown', intersectImgs);
-    }
-    function toScreenCoord(point,screenCoord)
-    {
-      if(point.clientX||(point.touches&&point.touches.length>0)||(point.changedTouches&&point.changedTouches.length>0))
-      {
-        var cursor = point.clientX?point:point.touches&&point.touches.length>0?point.touches[0]:point.changedTouches&&point.changedTouches.length>0?point.changedTouches[0]:null;
-        var clientX = cursor.clientX;
-        var clientY = cursor.clientY;
-        screenCoord.x = (clientX/window.innerWidth)*2-1;
-        screenCoord.y = -(clientY/window.innerHeight)*2+1;
-        return screenCoord;
-      }
-      else
-      {
-        throw 'un supported point'
-      }
-    }
-    window.addEventListener('mousedown', function (ev) {
-      pointDonw(toScreenCoord(ev,mouse));
-    });
-    window.addEventListener('touchstart', function (ev) {
-      pointDonw(toScreenCoord(ev,mouse));
-    });
-    window.addEventListener('mousemove',function(ev){
-      pointMove(toScreenCoord(ev,mouse));
-    });
-    window.addEventListener('touchmove',function(ev){
-      if(ev.touches.length<2)
-      {
-        pointMove(toScreenCoord(ev,mouse));
-      }
-    });
-    window.addEventListener('mouseup',function(ev){
-      pointUp(toScreenCoord(ev,mouse));
-    });
-    window.addEventListener('touchend',function(ev){
-      pointUp(toScreenCoord(ev,mouse));
-    })
-    this.init();
-    this.Frame();
-
-
+  var EventBase = function(){
+    this.events = [];
   }
+  EventBase.prototype.emit = function(event,...args)
+  {
+    var e = this.events.find(function (v) { return v.en === event });
+    if (e) {
+        e.cb.forEach(function (v) {
+            if (v && typeof v === 'function') v(...args);
+        })
+    }
+  }
+  EventBase.prototype.on = function(event, listener)
+  {
+    var cbs = [];
+    if (this.events.length === 0) {
+        this.events.push({ en: event, cb: cbs });
+    }
+    else {
+        for (var i = 0; i < this.events.length; i++) {
+            if (this.events[i].en === event) {
+                cbs = this.events[i].cb;
+                break;
+            }
+            if (i === this.events.length - 1) {
+              this.events.push({ en: event, cb: cbs });
+            }
+        }
+    }
+    cbs.push(listener);
+  }
+
   window.wechatGetway = wechatGetway;
-  window.PictureEditor = PictureEditor;
   window.StateMachine = StateMachine;
   window.State = State;
+  window.EventBase = EventBase;
 })(window)

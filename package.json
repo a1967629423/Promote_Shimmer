@@ -55,5 +55,10 @@
     "sequelize-typescript": "^0.6.11",
     "typedi": "^0.8.0",
     "typescript": "^3.5.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "gulp-babel": "^8.0.0"
   }
 }

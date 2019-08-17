@@ -31,7 +31,7 @@ export class PageController {
         let qr={url:''}
         if(userInfo.is_login)
         {
-            qr.url = await qrcode.toDataURL(`${fullurl}/form?vendor=${userInfo.unionid}`)
+            qr.url = await qrcode.toDataURL(`${fullurl}/form?vendor=${userInfo.unionid}`,{type:'image/jpeg',margin:0})
             return {userInfo,qr}
         }
         return {userInfo}

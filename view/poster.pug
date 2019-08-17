@@ -7,16 +7,18 @@ block main
         .editor-container
             canvas#editor
     script(src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/107/three.min.js")
+    script(src = locals.webSideRootPath+"static/script/editor.js")
     script.
         $(function(){
             var editor = new PictureEditor($('#editor')[0]);
             (new THREE.TextureLoader).load('#{qr.url}',function(qrcode){
+                qrcode.magFilter = qrcode.minFilter = THREE.LinearFilter;
                 editor.addImg(qrcode);
             });
-            editor.on('pointDown',(clicked)=>{
-                if(clicked.length>0)
-                {
-                    editor.removeImg(clicked[0].id);
-                }
-            })
+            //- editor.on('pointDown',(clicked)=>{
+            //-     if(clicked.length>0)
+            //-     {
+            //-         editor.removeImg(clicked[0].id);
+            //-     }
+            //- })
         })

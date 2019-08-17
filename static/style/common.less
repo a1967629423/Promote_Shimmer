@@ -30,4 +30,47 @@ body,html
             
         }
     }
+    .editorbox-container
+    {
+        border: 1px dashed #3a5268;
+        position: absolute;
+        transform: translate(-50%,-50%);
+        pointer-events: none;
+        .editorbox-anchor
+        {
+            pointer-events: all;
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background-color: #5fa1d9;
+            transform: translate(-50%,-50%);
+        }
+        .left
+        {
+            left: 0 !important;
+            top: 50%;
+        }
+        .top
+        {
+            top:0 !important;
+            left: 50%;
+        }
+        .right
+        {
+            right: 0 !important;
+            left: 100% !important;
+            top: 50%;
+        }
+        .bottom
+        {
+            bottom: 0 !important;
+            top: 100% !important;
+            left: 50%;
+        }
+    }
+    .hidden
+    {
+        display: none;
+    }
 }
