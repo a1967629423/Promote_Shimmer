@@ -93,6 +93,18 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
             }
         }
     }
+    EventBase.prototype.off = function(event,listener)
+    {
+      let _event = this.events.find(v=>v.en === event)
+      if(_event)
+      {
+        let idx = _event.cb.findIndex(v=>v===listener);
+        if(idx>-1)
+        {
+          _event.cb.splice(idx,1);
+        }
+      }
+    }
     cbs.push(listener);
   }
 

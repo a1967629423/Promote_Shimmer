@@ -15,10 +15,12 @@ block main
                 qrcode.magFilter = qrcode.minFilter = THREE.LinearFilter;
                 editor.addImg(qrcode);
             });
-            //- editor.on('pointDown',(clicked)=>{
+            //- function test(clicked){
             //-     if(clicked.length>0)
             //-     {
             //-         editor.removeImg(clicked[0].id);
             //-     }
-            //- })
+            //- }
+            //- editor.on('pointDown',test);
+            //- editor.off('pointDown',test);
         })
