@@ -17,7 +17,7 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
     }
     return a;
   }
-  var StateMachine = function () {
+  var StateMachine = function (option) {
     this.nowState = null;
     this.states = [];
     this.changeState = function (ns) {
@@ -39,6 +39,13 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
       var state = this.createState(name, option);
       this.changeState(state);
       return state;
+    }
+    if(option&&typeof option === 'object')
+    {
+      for(var item in option)
+      {
+        this[item] = option[item];
+      }
     }
   }
   var State = function (name = 'newState', option) {
