@@ -21,12 +21,14 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
     this.nowState = null;
     this.states = [];
     this.changeState = function (ns) {
-      if (this.nowState) this.nowState.quit();
-      this.nowState = ns;
-      this.nowState.start();
+      if (ns && ns instanceof State) {
+        if (this.nowState) this.nowState.quit();
+        this.nowState = ns;
+        this.nowState.start();
+      }
     }
     this.emit = function (e, ...arg) {
-      if (this.nowState[e] && typeof this.nowState[e] === 'function') {
+      if (this.nowState && this.nowState[e] && typeof this.nowState[e] === 'function') {
         this.nowState[e](...arg);
       }
     }
@@ -40,10 +42,8 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
       this.changeState(state);
       return state;
     }
-    if(option&&typeof option === 'object')
-    {
-      for(var item in option)
-      {
+    if (option && typeof option === 'object') {
+      for (var item in option) {
         this[item] = option[item];
       }
     }
@@ -71,44 +71,39 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
       }
     }
   }
-  var EventBase = function(){
+  var EventBase = function () {
     this.events = [];
   }
-  EventBase.prototype.emit = function(event,...args)
-  {
+  EventBase.prototype.emit = function (event, ...args) {
     var e = this.events.find(function (v) { return v.en === event });
     if (e) {
-        e.cb.forEach(function (v) {
-            if (v && typeof v === 'function') v(...args);
-        })
+      e.cb.forEach(function (v) {
+        if (v && typeof v === 'function') v(...args);
+      })
     }
   }
-  EventBase.prototype.on = function(event, listener)
-  {
+  EventBase.prototype.on = function (event, listener) {
     var cbs = [];
     if (this.events.length === 0) {
-        this.events.push({ en: event, cb: cbs });
+      this.events.push({ en: event, cb: cbs });
     }
     else {
-        for (var i = 0; i < this.events.length; i++) {
-            if (this.events[i].en === event) {
-                cbs = this.events[i].cb;
-                break;
-            }
-            if (i === this.events.length - 1) {
-              this.events.push({ en: event, cb: cbs });
-            }
+      for (var i = 0; i < this.events.length; i++) {
+        if (this.events[i].en === event) {
+          cbs = this.events[i].cb;
+          break;
         }
+        if (i === this.events.length - 1) {
+          this.events.push({ en: event, cb: cbs });
+        }
+      }
     }
-    EventBase.prototype.off = function(event,listener)
-    {
-      let _event = this.events.find(v=>v.en === event)
-      if(_event)
-      {
-        let idx = _event.cb.findIndex(v=>v===listener);
-        if(idx>-1)
-        {
-          _event.cb.splice(idx,1);
+    EventBase.prototype.off = function (event, listener) {
+      let _event = this.events.find(v => v.en === event)
+      if (_event) {
+        let idx = _event.cb.findIndex(v => v === listener);
+        if (idx > -1) {
+          _event.cb.splice(idx, 1);
         }
       }
     }
