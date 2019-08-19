@@ -3,16 +3,18 @@ extends ./base/layout.pug
 block header
     title 表单填写
 block main
-    if userInfo.is_login
-        h1 登陆了
-        h2 您好 #{userInfo.nickname} #{userInfo.sex==1?'先生':'女士'}
-    else
-        h1 未登录
-        script.
-            wechatGetway.login();
-    div( class="input-use")
-        form(class="input-usenameform" ) 姓名：
-            input( type="text" name="usename" class="input-usename" )
-        br
-        form 手机号：
-            input( type="text" name="" class="")
+    .block-main
+        .block
+            if userInfo.is_login
+                h1 登陆了
+                h2 您好 #{userInfo.nickname} #{userInfo.sex==1?'先生':'女士'}
+            else
+                h1 未登录
+                script.
+                    wechatGetway.login();
+            div( class="user")
+                form(class="input-usenameform" ) 姓名：
+                    input( type="text" runname="username" class="input-usename" )
+                br
+                form(class="iput-userphoneform") 手机号：
+                    input( type="text" name="userphone" class="input-usephone")
