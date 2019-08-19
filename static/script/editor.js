@@ -35,6 +35,179 @@
         canvas.y = -(canvas.y - (element ? element.height : window.innerHeight) / 2);
         return canvas;
     }
+    var ToolBox = function (editor) {
+        EventBase.call(this);
+        var self = this;
+        var head = $('.editor-toolbox-head'), first = $('.editor-toolbox-warper.first'),
+            second = $('.editor-toolbox-warper.second'), third = $('.editor-toolbox-warper.third'),
+            headIcon = head.children('i.fa');
+        this.init = function () {
+            this.initSm();
+            this.initDomEvent();
+        }
+        this.initSm = function () {
+            var layoutSm = new StateMachine({ targetElem: second });
+            var canvasSm = new StateMachine({ targetElem: second });
+            var saveSm = new StateMachine({ targetElem: second });
+            var generateIconHtml = function (iconName, text) {
+                return `<div class='editor-toolbox-cell'><i class='fa fa-${iconName} fa-lg'></i><div>${text}</div></div>`
+            }
+            var saveSmStates = {
+                default: saveSm.createDefaultState('default', {
+                    jpgElem: $(generateIconHtml('file-image-o', 'jpg')).on('click', function () { saveSm.emit('jpg') }),
+                    pngElem: $(generateIconHtml('file-image-o', 'png')).on('click', function () { saveSm.emit('png') }),
+                    active() {
+                        this.context.targetElem.append(this.jpgElem).append(this.pngElem);
+                    },
+                    inactive() {
+                        this.jpgElem.detach();
+                        this.pngElem.detach();
+                    },
+                    jpg() {
+                        console.log('jpg')
+                    },
+                    png() {
+                        console.log('png')
+                    }
+                })
+            }
+            var canvasSmStates = {
+                default: canvasSm.createDefaultState('default', {
+                    active() {
+
+                    },
+                    inactive() {
+
+                    }
+                })
+            }
+            var layoutSmState = {
+                defalut: layoutSm.createDefaultState('default', {
+                    addElem:$(generateIconHtml('plus-square','添加')).on('click',function(){layoutSm.emit('add')}),
+                    fileSelect:$(`<input type='file' hidden accept="image/*">`).on('change',function(){layoutSm.emit('filechange')}),
+                    addLayerLevelElem:$(generateIconHtml('plus','层级+1')).on('click',function(){layoutSm.emit('addLayerLevel')}),
+                    diffLayerLevelElem:$(generateIconHtml('minus','层级-1')).on('click',function(){layoutSm.emit('diffLayerLevel')}),
+                    loader:new THREE.TextureLoader(),
+                    active() {
+                        this.context.targetElem.append(this.addElem).append(this.fileSelect).append(this.addLayerLevelElem).append(this.diffLayerLevelElem);
+                    },
+                    inactive() {
+                        this.addElem.detach();
+                        this.fileSelect.detach();
+                        this.addLayerLevelElem.detach();
+                        this.diffLayerLevelElem.detach();
+                    },
+                    add() {
+                        this.fileSelect.trigger('click');
+                    },
+                    filechange(){
+                        var imgUrl = window.URL.createObjectURL(this.fileSelect[0].files[0]);
+                        this.loader.load(imgUrl,function(img){
+                            img.magFilter = img.minFilter = THREE.LinearFilter;
+                            editor.addImg(img);
+                        })
+                    },
+                    addLayerLevel(){
+                        editor.sm.emit('addLayerLevel')
+                    },
+                    diffLayerLevel(){
+                        editor.sm.emit('diffLayerLevel')
+                    }
+                })
+            }
+            this.fSm = new StateMachine({
+                elem: {
+                    layout: (function () {
+                        var layout = first.children('.layout').on('click', function () {
+                            self.fSm.emit('layout');
+                        });
+                        layout.sm = layoutSm;
+                        return layout;
+                    })(),
+                    canvas: (function () {
+                        var canvas = first.children('.canvas').on('click', function () {
+                            self.fSm.emit('canvas');
+                        });
+                        canvas.sm = canvasSm;
+                        return canvas;
+                    })(),
+                    save: (function () {
+                        var save = first.children('.save').on('click', function () {
+                            self.fSm.emit('save');
+                        })
+                        save.sm = saveSm;
+                        return save;
+                    })()
+                }
+            });
+
+            this.fSmStates = {
+                default: this.fSm.createDefaultState('default', {
+                    layout() {
+                        this.active(this.context.elem.layout);
+                    },
+                    canvas() {
+                        this.active(this.context.elem.canvas);
+                    },
+                    save() {
+                        this.active(this.context.elem.save);
+                    },
+                    active(element) {
+                        if (element) {
+                            if (element === this.context.activedElement) {
+                                this.context.activedElement.removeClass('active');
+                                this.context.activedElement.sm.emit('inactive');
+                                this.context.activedElement = null;
+                                second.addClass('hidden');
+                            }
+                            else {
+                                if (this.context.activedElement) {
+                                    this.context.activedElement.removeClass('active')
+                                    this.context.activedElement.sm.emit('inactive');
+                                }
+                                this.context.activedElement = element;
+                                this.context.activedElement.addClass('active');
+                                this.context.activedElement.sm.emit('active');
+                                second.removeClass('hidden');
+                            }
+                        }
+                    },
+                    start() {
+                        for (var item in this.context.elem) {
+                            this.context.elem[item].removeClass('active');
+                        }
+                    }
+                })
+            }
+            first.sm = this.fSm;
+        }
+        this.initDomEvent = function () {
+            head.on('click', (function () {
+                var nowState = true;
+                return function () {
+                    if (nowState) {
+                        first.removeClass('hidden');
+                        if (first.sm) first.sm.emit('start');
+                        headIcon.removeClass('fa-angle-up');
+                        headIcon.addClass('fa-angle-down');
+                    }
+                    else {
+                        first.addClass('hidden');
+                        second.addClass('hidden');
+                        third.addClass('hidden');
+                        headIcon.removeClass('fa-angle-down');
+                        headIcon.addClass('fa-angle-up');
+                    }
+                    nowState = !nowState;
+                }
+            })());
+        }
+
+
+        this.init();
+    }
+    ToolBox.prototype = Object.create(EventBase.prototype);
+    ToolBox.prototype.constructor = ToolBox;
     var EditorBox = function (element, camera) {
         EventBase.call(this);
         var self = this;
@@ -114,10 +287,10 @@
                         this.context.pointIndexes.forEach(v => {
                             var idx = v.idx * 3;
                             if (v.horizontal) {
-                                array[idx] += diff.x;
+                                array[idx] += diff.x / self.camera.zoom;
                             }
                             if (v.vertical) {
-                                array[idx + 1] += diff.y;
+                                array[idx + 1] += diff.y / self.camera.zoom;
                             }
 
                         });
@@ -214,8 +387,8 @@
                 ConvertScreenToSourceCoord(boxMax.applyMatrix4(img.obj.modelViewMatrix).applyMatrix4(self.camera.projectionMatrix), element);
                 ConvertScreenToSourceCoord(boxMin.applyMatrix4(img.obj.modelViewMatrix).applyMatrix4(self.camera.projectionMatrix), element);
                 ConvertScreenToSourceCoord(center.applyMatrix4(img.obj.modelViewMatrix).applyMatrix4(self.camera.projectionMatrix), element);
-                var width = box.max.x - box.min.x;
-                var height = box.max.y - box.min.y;
+                var width = boxMax.x - boxMin.x;
+                var height = boxMax.y -boxMin.y;
                 //ConvertCanvasToSourceCoord(self.position, element)
                 // container.css('left', self.position.x + center.x);
                 // container.css('top', self.position.y - center.y);
@@ -304,7 +477,7 @@
                     pointMove: (function () {
                         var diff = new THREE.Vector3();
                         return function (point) {
-                            diff.subVectors(point.canvas, this.context.lastPoint);
+                            diff.subVectors(point.canvas, this.context.lastPoint).divideScalar(self.Camera.zoom);
                             this.context.activeImg.obj.position.add(diff);
                             self.editorBox.update(this.context.activeImg);
                             this.context.lastPoint.copy(point.canvas);
@@ -337,6 +510,28 @@
                     },
                     start() {
                         console.log('idel', this);
+                    },
+                    addLayerLevel()
+                    {
+                        var idx = self.imgs.array.findIndex(v=>v===this.context.activeImg)
+                        if(idx>-1&&idx<self.imgs.array.length-1)
+                        {
+                            var currentOrder = this.context.activeImg.order;
+                            this.context.activeImg.order = self.imgs.array[idx+1].order
+                            self.imgs.array[idx+1].order = currentOrder;
+                        }
+                        self.imgs.needsUpdate = true;
+                    },
+                    diffLayerLevel()
+                    {
+                        var idx = self.imgs.array.findIndex(v=>v===this.context.activeImg)
+                        if(idx>0)
+                        {
+                            var currentOrder = this.context.activeImg.order;
+                            this.context.activeImg.order = self.imgs.array[idx-1].order
+                            self.imgs.array[idx-1].order = currentOrder;
+                        }
+                        self.imgs.needsUpdate = true;
                     }
                 })
 
@@ -349,8 +544,9 @@
             this.Camera.right = width / 2;
             this.Camera.top = height / 2;
             this.Camera.bottom = height / -2;
+            this.Camera.zoom = 1./this.viewScale;
             this.Camera.updateProjectionMatrix();
-            this.Renderer.setSize(width*this.viewScale, height*this.viewScale, false);
+            this.Renderer.setSize(width, height , false);
         }
         this.onSizeChange();
         window.addEventListener('resize', this.onSizeChange.bind(this));
@@ -379,7 +575,12 @@
             var basicMaterial = new THREE.MeshBasicMaterial({ map: Img, side: THREE.DoubleSide });
             var mesh = new THREE.Mesh(planeGeometry, basicMaterial);
             window.imgs = this.imgs
-            this.imgs.array.push({ source: Img, obj: mesh, id: this.idCursor++, order: this.imgs.length > 0 ? this.imgs[this.imgs.length - 1].order + 1 : 1 });
+            if(Img.image.width> this.canvas.width || Img.image.height>this.canvas.height)
+            {
+                this.viewScale = Math.max(Img.image.width/this.canvas.width,Img.image.height/this.canvas.height);
+                this.onSizeChange();
+            }
+            this.imgs.array.push({ source: Img, obj: mesh, id: this.idCursor++, order: this.imgs.array.length > 0 ? (this.imgs.array[this.imgs.array.length - 1].order + 1) : 1 });
             this.imgs.needsUpdate = true;
             this.Scene.add(mesh);
         }
@@ -451,4 +652,5 @@
     PictureEditor.prototype = Object.create(EventBase.prototype);
     PictureEditor.prototype.constructor = PictureEditor;
     window.PictureEditor = PictureEditor;
+    window.ToolBox = ToolBox;
 })(window)
