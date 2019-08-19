@@ -1,29 +1,29 @@
-body,html
-{
+body,
+html {
     margin: 0;
     height: 100%;
 }
-.main
-{
+
+.main {
     width: 100%;
     height: 100%;
 }
-.poster-container
-{
+
+.poster-container {
     width: 100%;
     height: 100%;
     overflow: hidden;
     background-color: #e1e1e1;
-    .editor-container
-    {
+
+    .editor-container {
         display: flex;
         justify-content: center;
         align-content: center;
         height: 100%;
         padding: 10px;
         box-sizing: border-box;
-        .editor-warpper
-        {
+
+        .editor-warpper {
             position: relative;
             width: 100%;
             height: 100%;
@@ -32,93 +32,136 @@ body,html
             box-shadow: 0 0 6px #00000089;
             box-sizing: border-box;
             overflow: hidden;
-            #editor
-            {
+
+            #editor {
                 align-items: center;
                 width: 100%;
                 height: 100%;
             }
         }
     }
-    .editor-toolbox-container
-    {
+
+    .editor-toolbox-container {
         position: absolute;
         bottom: 0;
-        left:50%;
+        left: 50%;
         display: flex;
         justify-content: center;
-        flex-direction: row;
+        flex-direction: column;
         transform: translate(-50%, 0);
-        .editor-toolbox-warper
-        {
+        filter: drop-shadow(0 0 6px rgb(27, 27, 27));
+
+        .editor-toolbox-warper {
             position: relative;
-            width: 216px;
-            height: 36px;
+            width: 280px;
+            height: 53px;
             transition: ease-in-out .3s;
             overflow: hidden;
             display: flex;
             justify-content: space-around;
-            background-color: #a7936e;
-            .editor-toolbox-cell
-            {
-                width: 33px;
-                height: 33px;
+            background-color: #4d4335;
+            color: #d3b47a;
+
+            .editor-toolbox-cell {
                 margin: 3px;
+                margin-bottom: 5px;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                text-align: center;
+                border-radius: 6px;
+            }
+
+            .editor-toolbox-cell.active {
+                text-shadow: 0 0 5px, 0 0 10px, 0 0 15px, 0 0 20px;
+            }
+
+            .editor-toolbox-cell:active {
+                text-shadow: 0 0 5px, 0 0 10px, 0 0 15px, 0 0 20px;
             }
         }
-        .editor-toolbox-open
-        {
+
+        .editor-toolbox-warper:first-child {
+            border-radius: 10px 10px 0 0;
+        }
+
+        .editor-toolbox-warper:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: 0;
+            background-color: rgb(41, 41, 41);
+        }
+
+        .editor-toolbox-content:first-child {
+            border-radius: 10px 10px 0 0;
+        }
+
+
+        .editor-toolbox-head {
             position: relative;
             background: #4d4335;
             color: #d3b47a;
             width: 160px;
             height: 24px;
+            margin: 0 auto;
             display: flex;
             justify-content: center;
             border-radius: 10px 10px 0 0;
-            i{
+
+            i {
                 margin: auto 0;
             }
         }
-        .hiden
-        {
+
+        .editor-toolbox-head:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: 0;
+            background-color: rgb(41, 41, 41);
+        }
+
+        .hidden {
             height: 0;
         }
     }
-    .editorbox-container
-    {
+
+    .editorbox-container {
         border: 1px dashed #3a5268;
         position: absolute;
-        transform: translate(-50%,-50%);
+        transform: translate(-50%, -50%);
         pointer-events: none;
-        .editorbox-anchor
-        {
+
+        .editorbox-anchor {
             pointer-events: all;
             position: absolute;
             width: 10px;
             height: 10px;
             border-radius: 5px;
             background-color: #5fa1d9;
-            transform: translate(-50%,-50%);
+            transform: translate(-50%, -50%);
         }
-        .left
-        {
+
+        .left {
             left: 0 !important;
             top: 50%;
         }
-        .top
-        {
-            top:0 !important;
+
+        .top {
+            top: 0 !important;
             left: 50%;
         }
-        .right
-        {
+
+        .right {
             right: 0 !important;
             left: 100% !important;
             top: 50%;
         }
-        .bottom
-        {
+
+        .bottom {
             bottom: 0 !important;
             top: 100% !important;
             left: 50%;
