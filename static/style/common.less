@@ -13,6 +13,7 @@ body,html
     width: 100%;
     height: 100%;
     overflow: hidden;
+    background-color: #e1e1e1;
     .editor-container
     {
         display: flex;
@@ -21,13 +22,12 @@ body,html
         height: 100%;
         padding: 10px;
         box-sizing: border-box;
-        background-color: #e1e1e1;
         .editor-warpper
         {
             position: relative;
             width: 100%;
             height: 100%;
-            border: 1px solid black;
+            border: 2px solid #7a7a7a;
             border-radius: 6px;
             box-shadow: 0 0 6px #00000089;
             box-sizing: border-box;
@@ -38,6 +38,51 @@ body,html
                 width: 100%;
                 height: 100%;
             }
+        }
+    }
+    .editor-toolbox-container
+    {
+        position: absolute;
+        bottom: 0;
+        left:50%;
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        transform: translate(-50%, 0);
+        .editor-toolbox-warper
+        {
+            position: relative;
+            width: 216px;
+            height: 36px;
+            transition: ease-in-out .3s;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-around;
+            background-color: #a7936e;
+            .editor-toolbox-cell
+            {
+                width: 33px;
+                height: 33px;
+                margin: 3px;
+            }
+        }
+        .editor-toolbox-open
+        {
+            position: relative;
+            background: #4d4335;
+            color: #d3b47a;
+            width: 160px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            border-radius: 10px 10px 0 0;
+            i{
+                margin: auto 0;
+            }
+        }
+        .hiden
+        {
+            height: 0;
         }
     }
     .editorbox-container
@@ -78,9 +123,5 @@ body,html
             top: 100% !important;
             left: 50%;
         }
-    }
-    .hidden
-    {
-        display: none;
     }
 }
