@@ -29,7 +29,7 @@ useExpressServer(app,{
         path.resolve(__dirname,"../controllers/**/*Controller.js")
     ],
     middlewares:[
-        path.resolve(__dirname,'../middlewares/*Middleware.js')
+        path.resolve(__dirname,'../middlewares/*Middleware.js'),
     ]
 });
 
@@ -55,7 +55,7 @@ app.use('/favicon.ico',express.static('public/favicon.ico'));
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.raw())
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
 
 app.get("/*",function(req,res,next){
