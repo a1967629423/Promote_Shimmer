@@ -12,7 +12,7 @@ export class formApiController{
         // console.log((userphone+"").length)
         // console.log(userphone)
         console.log(request)
-        if(Number.isNaN(Number.parseInt(userphone)))
+        if(!Number.isNaN(Number.parseInt(userphone)))
         {
             if((userphone+"").length===10)
             {
