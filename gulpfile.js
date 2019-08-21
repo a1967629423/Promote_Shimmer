@@ -2,6 +2,8 @@ var gulp = require('gulp');
 var less = require('gulp-less');
 var uglify = require('gulp-uglify-es').default;
 const babel = require('gulp-babel');
+const path = require('path')
+var through = require('through')
 var named = require('vinyl-named');
 var webpack = require('webpack-stream');
 function watch(done) {
@@ -28,8 +30,13 @@ function watch(done) {
 //   }
 // },],
 function script(done) {
-  return gulp.src(['static/script/*.js', 'static/script/**/*.js'])
-    .pipe(named()).pipe(webpack({
+  return gulp.src(['static/script/*.js', 'static/script/**/*.js',"!static/script/require/*.js","!static/script/require/**/*.js"])
+    .pipe(through(function(file){
+      var filepath = file.path;
+      file.named = filepath.replace(/^.*static[\/ \\]script[\/ \\]/g,'').replace(path.extname(file.path),'');
+      this.queue(file)
+    }))
+    .pipe(webpack({
       module: {
         rules:[{
           loaders:[{loader:'babel-loader',query:{

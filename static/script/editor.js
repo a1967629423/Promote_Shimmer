@@ -1,19 +1,21 @@
+const THREE = require('three');
+const checkerboader = require('./require/shader/checkerboard').checkerboard;
 (function (window) {
     function SetCoord(point, screenCoord, canvas) {
         var clientX = point.clientX;
         var clientY = point.clientY;
         screenCoord.source.x = clientX;
         screenCoord.source.y = clientY;
-        screenCoord.canvas.x = clientX - (canvas ? canvas.width : window.innerWidth) / 2;
-        screenCoord.canvas.y = -clientY + (canvas ? canvas.height : window.innerHeight) / 2;
-        screenCoord.screen.x = (clientX / (canvas ? canvas.width : window.innerWidth)) * 2 - 1;
-        screenCoord.screen.y = -(clientY / (canvas ? canvas.height : window.innerHeight)) * 2 + 1;
+        screenCoord.canvas.x = (clientX-(canvas?canvas.offsetLeft:0)) - (canvas ? canvas.width : window.innerWidth) / 2;
+        screenCoord.canvas.y = -(clientY - (canvas?canvas.offsetTop:0)) + (canvas ? canvas.height : window.innerHeight) / 2;
+        screenCoord.screen.x = ((clientX-(canvas?canvas.offsetLeft:0)) / (canvas ? canvas.width : window.innerWidth)) * 2 - 1;
+        screenCoord.screen.y = -((clientY - (canvas?canvas.offsetTop:0))  / (canvas ? canvas.height : window.innerHeight)) * 2 + 1;
         return screenCoord;
 
     }
     function ConvertScreenToSourceCoord(screen, canvas) {
-        screen.x = (screen.x + 1) / 2 * (canvas ? canvas.width : window.innerWidth);
-        screen.y = -(screen.y - 1) / 2 * (canvas ? canvas.height : window.innerHeight);
+        screen.x = (screen.x + 1) / 2 * (canvas ? canvas.width : window.innerWidth) + (canvas? canvas.offsetLeft:0);
+        screen.y = -(screen.y - 1) / 2 * (canvas ? canvas.height : window.innerHeight) + (canvas? canvas.offsetTop:0);
         return screen;
     }
     function ConvertScreenToCanvasCoord(screen, canvas) {
@@ -152,27 +154,27 @@
                                 <div class="editor-toolbox-range-input">
                                     <input type="number" class="height">
                                     <input type="number" class="width">
-                                    <input type="submit">
+                                    <div class="btn btn-small change-size">修改</div>
                                 </div>`,
                                 activeBefore: [preventAll],
                                 init(elem) {
                                     elem.addClass('flex-row');
-                                    elem.children('input[type=submit]').on('click', { elem }, this.submit);
+                                    elem.addClass('disable-shine');
+                                    elem.find('.change-size').on('click', { elem }, this.submit);
                                 },
                                 submit(event) {
                                     var elem = event.data.elem;
-                                    var height = elem.children('.height').val();
-                                    var width = elem.children('.width').val();
+                                    var height = Number.parseInt(elem.find('.height').val()) ;
+                                    var width = Number.parseInt(elem.find('.width').val()) ;
                                     if (!Number.isInteger(height) || !Number.isInteger(width)) return;
                                     height = Number.parseInt(height);
                                     width = Number.parseInt(width);
-                                    editor.setCanvasRange(width,height);
+                                    editor.setCanvasRange(width, height);
                                 },
-                                show(elem)
-                                {
-                                    var {height,width} = editor.getCanvasRange();
-                                    elem.children('.height').val(height);
-                                    elem.children('.width').val(width);
+                                show(elem) {
+                                    var { height, width } = editor.getCanvasRange();
+                                    elem.find('.height').val(height);
+                                    elem.find('.width').val(width);
                                 }
                             }
                         }
@@ -186,14 +188,14 @@
                                 icon: generateIconHtml('file-image-o', 'jpg'),
                                 activeBefore: [preventAll],
                                 active() {
-
+                                    editor.saveImage("image/jpeg")
                                 }
                             },
                             png: {
                                 icon: generateIconHtml('file-image-o', 'png'),
                                 activeBefore: [preventAll],
                                 active() {
-
+                                    editor.saveImage()
                                 }
                             }
                         }
@@ -542,26 +544,47 @@
             canvas: new THREE.Vector3(),
             source: new THREE.Vector3(),
         }
+        var _pause = false;
         this.viewScale = 1.0;
         this.canvas = canvas;
+        this.offCanvas = document.createElement('canvas');
+        this.offCanvasCtx = this.offCanvas.getContext('2d');
         this.Scene = new THREE.Scene();
         this.Camera = new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2);
         this.Camera.position.z = 1000;
         this.Camera.lookAt(new THREE.Vector3(0, 0, 0))
-        this.Renderer = new THREE.WebGLRenderer({ canvas: canvas });
+        this.Renderer = new THREE.WebGLRenderer({ canvas: canvas, preserveDrawingBuffer: true });
         this.Renderer.setClearColor(new THREE.Color(0xffffff))
         this.clock = new THREE.Clock();
         this.idCursor = 0;
         this.imgs = { array: [] };
         this.sm = new StateMachine();
         this.smStates = {};
+        this.size = new THREE.Vector2(canvas.offsetWidth,canvas.offsetHeight);
         this.init = function () {
             this.initSm();
             this.initBox();
+            this.initOffCanvas();
+            this.initBackground();
             window.camera = this.Camera;
+        }
+        this.pause = function () {
+            _pause = true;
+        }
+        this.resume = function () {
+            _pause = false;
         }
         this.initBox = function () {
             this.editorBox = new EditorBox(this.canvas, this.Camera);
+        }
+        this.initOffCanvas = function(){
+            this.offCanvas.hidden = true;
+        }
+        this.initBackground = function(){
+            this.background = new checkerboader();
+            this.background.position.z = -10;
+            window.background = this.background;
+            this.Scene.add(this.background);
         }
         this.initSm = function () {
             this.smStates = {
@@ -643,6 +666,13 @@
             }
         }
         this.onSizeChange = function () {
+            var parent = canvas.parentElement;
+            var heightPercent =  (this.size.y/this.size.x * parent.offsetWidth)/parent.offsetHeight*100;
+            canvas.style.height = heightPercent+"%";
+            this.RenderSizeSet();
+        }
+        this.RenderSizeSet = function()
+        {
             var width = canvas.offsetWidth;
             var height = canvas.offsetHeight;
             this.Camera.left = width / -2;
@@ -655,10 +685,50 @@
         }
         this.setCanvasRange = function (width, height) {
             //todo
+            this.size.x = width;
+            this.size.y = height;
+            this.onSizeChange();
         }
         this.getCanvasRange = function () {
             //todo
-            return { width: 0, height: 0 };
+            return { width: this.size.x, height: this.size.y };
+        }
+        var fixtype = function (type) {
+            type = type.toLocaleLowerCase().replace(/jpg/i, 'jpeg');
+            var r = type.match(/png|jpeg|bmp|gif/)[0];
+            return 'image/' + r;
+        }
+        function downloadIamge(url, name) {
+            // 生成一个a元素
+            var a = document.createElement('a')
+            // 创建一个单击事件
+            var event = new MouseEvent('click')
+
+            // 将a的download属性设置为我们想要下载的图片名称，若name不存在则使用‘下载图片名称’作为默认名称
+            a.download = name || '保存'
+            // 将生成的URL设置为a.href属性
+            //a.href = fixtype(url)
+            a.href = url;
+            // 触发a的单击事件
+            a.dispatchEvent(event)
+        }
+
+        this.saveImage = function (type) {
+            this.pause();
+            this.background.visible = false;
+            this.Render();
+            this.offCanvas.height = this.canvas.height;
+            this.offCanvas.width = this.canvas.width;
+            this.offCanvasCtx.drawImage(this.canvas,0,0);
+            this.offCanvas.toBlob((blob)=>{
+                var imgurl =window.URL.createObjectURL(blob) 
+                downloadIamge(imgurl);
+                console.log(imgurl);
+                this.background.visible = true;
+                this.resume();
+                window.URL.revokeObjectURL(blob);
+            },type)
+
         }
         this.onSizeChange();
         window.addEventListener('resize', this.onSizeChange.bind(this));
@@ -678,8 +748,10 @@
             }
         }
         this.Frame = function () {
-            self.Render();
-            self.Logic();
+            if (!_pause) {
+                self.Render();
+                self.Logic();
+            }
             requestAnimationFrame(self.Frame)
         }
         this.addImg = function (Img) {
@@ -731,29 +803,29 @@
         }
         this.canvas.addEventListener('mousedown', function (ev) {
             if (ev.cancelable) ev.preventDefault();
-            pointDown(SetCoord(convertTouchToMouse(ev), mouse));
+            pointDown(SetCoord(convertTouchToMouse(ev), mouse,this));
         });
         this.canvas.addEventListener('touchstart', function (ev) {
             if (ev.cancelable) ev.preventDefault();
-            pointDown(SetCoord(convertTouchToMouse(ev), mouse));
+            pointDown(SetCoord(convertTouchToMouse(ev), mouse,this));
         });
         this.canvas.addEventListener('mousemove', function (ev) {
             if (ev.cancelable) ev.preventDefault();
-            pointMove(SetCoord(convertTouchToMouse(ev), mouse));
+            pointMove(SetCoord(convertTouchToMouse(ev), mouse,this));
         });
         this.canvas.addEventListener('touchmove', function (ev) {
             if (ev.cancelable) ev.preventDefault();
             if (ev.touches.length < 2) {
-                pointMove(SetCoord(convertTouchToMouse(ev), mouse));
+                pointMove(SetCoord(convertTouchToMouse(ev), mouse,this));
             }
         });
         this.canvas.addEventListener('mouseup', function (ev) {
             if (ev.cancelable) ev.preventDefault();
-            pointUp(SetCoord(convertTouchToMouse(ev), mouse));
+            pointUp(SetCoord(convertTouchToMouse(ev), mouse,this));
         });
         this.canvas.addEventListener('touchend', function (ev) {
             if (ev.cancelable) ev.preventDefault();
-            pointUp(SetCoord(convertTouchToMouse(ev), mouse));
+            pointUp(SetCoord(convertTouchToMouse(ev), mouse,this));
         })
         this.init();
         this.Frame();

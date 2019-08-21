@@ -37,6 +37,7 @@ block main
                 qrcode.magFilter = qrcode.minFilter = THREE.LinearFilter;
                 editor.addImg(qrcode);
             });
+            window.editor = editor;
             var toolbox = new ToolBox(editor);
             //- function test(clicked){
             //-     if(clicked.length>0)

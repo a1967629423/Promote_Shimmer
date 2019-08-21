@@ -53,7 +53,9 @@ app.set('view engine','pug');
 app.use('/static',express.static('public'));
 app.use('/favicon.ico',express.static('public/favicon.ico'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.text());
+app.use(bodyParser.raw())
+app.use(bodyParser.urlencoded({extended:false}));
 app.use(cookieParser());
 
 app.get("/*",function(req,res,next){

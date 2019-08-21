@@ -8,13 +8,14 @@
     "ui:build": "node_modules/.bin/gulp",
     "ui:watch": "node_modules/.bin/gulp watch",
     "ui:dev": "node_modules/.bin/gulp dev",
-    "clean": "node_modules/.bin/del .\\dist\\*.*",
+    "ui:clean":"node_modules/.bin/del-cli ./public/*",
+    "clean": "node_modules/.bin/del-cli ./dist/*",
     "dev:start": "node_modules/.bin/nodemon dist/entrypoints/server.js",
     "start": "node dist/entrypoints/server.js",
     "watch": "node_modules/.bin/tsc -w",
     "cleanwatch": "npm run clean&&npm run watch",
     "build": "node_modules/.bin/tsc",
-    "reload": "npm run build && npm run dev:start"
+    "reload": "npm run clean && npm run build && npm run dev:start"
   },
   "repository": {
     "type": "git",
@@ -57,6 +58,8 @@
     "routing-controllers": "^0.7.7",
     "sequelize": "^5.15.0",
     "sequelize-typescript": "^0.6.11",
+    "three": "^0.107.0",
+    "through": "^2.3.8",
     "typedi": "^0.8.0",
     "typescript": "^3.5.3",
     "vinyl-named": "^1.1.0",
