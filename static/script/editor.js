@@ -41,169 +41,283 @@
         var head = $('.editor-toolbox-head'), first = $('.editor-toolbox-warper.first'),
             second = $('.editor-toolbox-warper.second'), third = $('.editor-toolbox-warper.third'),
             headIcon = head.children('i.fa');
-        this.init = function () {
-            this.initSm();
-            this.initDomEvent();
+        var layers = [head, first, second, third];
+        /*
+        *before active 与 inactive接收 对象，其中包含 elem(外层cell(jquery)) rule(当前rule) event(当前事件
+        *(可阻止当前窗口动画,与激活设置))其中 before 必须异步 Rules内不可使用_elem(记录cell) _actived(记录激活状态) _layer(当前处在的层)
+        */
+        var generateIconHtml = function (iconName, text) {
+            return `<i class='fa fa-${iconName} fa-lg'></i><div>${text ? text : ''}</div>`
         }
-        this.initSm = function () {
-            var layoutSm = new StateMachine({ targetElem: second });
-            var canvasSm = new StateMachine({ targetElem: second });
-            var saveSm = new StateMachine({ targetElem: second });
-            var generateIconHtml = function (iconName, text) {
-                return `<div class='editor-toolbox-cell'><i class='fa fa-${iconName} fa-lg'></i><div>${text}</div></div>`
-            }
-            var saveSmStates = {
-                default: saveSm.createDefaultState('default', {
-                    jpgElem: $(generateIconHtml('file-image-o', 'jpg')).on('click', function () { saveSm.emit('jpg') }),
-                    pngElem: $(generateIconHtml('file-image-o', 'png')).on('click', function () { saveSm.emit('png') }),
-                    active() {
-                        this.context.targetElem.append(this.jpgElem).append(this.pngElem);
-                    },
-                    inactive() {
-                        this.jpgElem.detach();
-                        this.pngElem.detach();
-                    },
-                    jpg() {
-                        console.log('jpg')
-                    },
-                    png() {
-                        console.log('png')
-                    }
-                })
-            }
-            var canvasSmStates = {
-                default: canvasSm.createDefaultState('default', {
-                    active() {
+        async function preventAll(data) {
+            data.event.preventStateChange();
+            data.event.preventBoxAnimat();
+        }
+        async function activeIcon(data) {
+            return data.elem.addClass('active')
+        }
+        async function inactiveIcon(data) {
+            return data.elem.removeClass('active')
+        }
+        function _closeAllNextRules(elem) {
+            var rules = elem.nextRules;
+            if (rules) {
+                for (var item in rules) {
+                    var rule = rules[item]
+                    if (rule._actived) {
 
-                    },
-                    inactive() {
-
+                        self.cellClick({ data: { rule: rules[item] } });
+                        if (!rule.inactiveBefore.some(v => v === closeAllNextRules))
+                            _closeAllNextRules(rule);
                     }
-                })
-            }
-            var layoutSmState = {
-                defalut: layoutSm.createDefaultState('default', {
-                    addElem:$(generateIconHtml('plus-square','添加')).on('click',function(){layoutSm.emit('add')}),
-                    fileSelect:$(`<input type='file' hidden accept="image/*">`).on('change',function(){layoutSm.emit('filechange')}),
-                    addLayerLevelElem:$(generateIconHtml('plus','层级+1')).on('click',function(){layoutSm.emit('addLayerLevel')}),
-                    diffLayerLevelElem:$(generateIconHtml('minus','层级-1')).on('click',function(){layoutSm.emit('diffLayerLevel')}),
-                    loader:new THREE.TextureLoader(),
-                    active() {
-                        this.context.targetElem.append(this.addElem).append(this.fileSelect).append(this.addLayerLevelElem).append(this.diffLayerLevelElem);
-                    },
-                    inactive() {
-                        this.addElem.detach();
-                        this.fileSelect.detach();
-                        this.addLayerLevelElem.detach();
-                        this.diffLayerLevelElem.detach();
-                    },
-                    add() {
-                        this.fileSelect.trigger('click');
-                    },
-                    filechange(){
-                        var imgUrl = window.URL.createObjectURL(this.fileSelect[0].files[0]);
-                        this.loader.load(imgUrl,function(img){
-                            img.magFilter = img.minFilter = THREE.LinearFilter;
-                            editor.addImg(img);
-                        })
-                    },
-                    addLayerLevel(){
-                        editor.sm.emit('addLayerLevel')
-                    },
-                    diffLayerLevel(){
-                        editor.sm.emit('diffLayerLevel')
-                    }
-                })
-            }
-            this.fSm = new StateMachine({
-                elem: {
-                    layout: (function () {
-                        var layout = first.children('.layout').on('click', function () {
-                            self.fSm.emit('layout');
-                        });
-                        layout.sm = layoutSm;
-                        return layout;
-                    })(),
-                    canvas: (function () {
-                        var canvas = first.children('.canvas').on('click', function () {
-                            self.fSm.emit('canvas');
-                        });
-                        canvas.sm = canvasSm;
-                        return canvas;
-                    })(),
-                    save: (function () {
-                        var save = first.children('.save').on('click', function () {
-                            self.fSm.emit('save');
-                        })
-                        save.sm = saveSm;
-                        return save;
-                    })()
                 }
-            });
-
-            this.fSmStates = {
-                default: this.fSm.createDefaultState('default', {
-                    layout() {
-                        this.active(this.context.elem.layout);
-                    },
-                    canvas() {
-                        this.active(this.context.elem.canvas);
-                    },
-                    save() {
-                        this.active(this.context.elem.save);
-                    },
-                    active(element) {
-                        if (element) {
-                            if (element === this.context.activedElement) {
-                                this.context.activedElement.removeClass('active');
-                                this.context.activedElement.sm.emit('inactive');
-                                this.context.activedElement = null;
-                                second.addClass('hidden');
-                            }
-                            else {
-                                if (this.context.activedElement) {
-                                    this.context.activedElement.removeClass('active')
-                                    this.context.activedElement.sm.emit('inactive');
+            }
+        }
+        function closeAllNextRules(data) {
+            return new Promise((res) => {
+                _closeAllNextRules(data.rule);
+                res();
+            })
+        }
+        this.Rules = {
+            open: {
+                icon: `<i class="fa fa-angle-up fa-lg"></i>`,
+                activeBefore: [],
+                active(data) {
+                    data.elem.children('i.fa').removeClass('fa-angle-up').addClass('fa-angle-down');
+                },
+                inactiveBefore: [closeAllNextRules],
+                inactive(data) {
+                    data.elem.children('i.fa').removeClass('fa-angle-down').addClass('fa-angle-up');
+                },
+                init(elem) {
+                    elem.css('width', '80%');
+                    elem.css('textAlign', 'center');
+                },
+                nextRules: {
+                    layer: {
+                        icon: generateIconHtml('th-list', '图层'),
+                        activeBefore: [activeIcon],
+                        inactiveBefore: [inactiveIcon],
+                        nextRules: {
+                            addImg: {
+                                icon: `${generateIconHtml('plus-square', '添加')}<input type="file" hidden accept="image/*">`,
+                                activeBefore: [preventAll],
+                                active(data) {
+                                },
+                                inactiveBefore: [preventAll],
+                                init(elem) {
+                                    var input = elem.children('input');
+                                    elem.on('click', function () { input[0].click() });
+                                    input.on('change', { elem: input }, this.filechange);
+                                },
+                                filechange(event) {
+                                    var input = event.data.elem;
+                                    var file = input[0].files[0]
+                                    var imgUrl = window.URL.createObjectURL(file);
+                                    (new THREE.TextureLoader()).load(imgUrl, function (img) {
+                                        img.magFilter = img.minFilter = THREE.LinearFilter;
+                                        editor.addImg(img);
+                                        window.URL.revokeObjectURL(imgUrl);
+                                    });
                                 }
-                                this.context.activedElement = element;
-                                this.context.activedElement.addClass('active');
-                                this.context.activedElement.sm.emit('active');
-                                second.removeClass('hidden');
+
+                            },
+                            layerLevelAdd: {
+                                icon: generateIconHtml('plus', '层级+1'),
+                                activeBefore: [preventAll],
+                                inactiveBefore: [preventAll],
+                                active(data) {
+                                    editor.sm.emit('addLayerLevel')
+                                },
+                            },
+                            layerLevelDiff: {
+                                icon: generateIconHtml('minus', '层级-1'),
+                                activeBefore: [preventAll],
+                                inactiveBefore: [preventAll],
+                                active(data) {
+                                    editor.sm.emit('diffLayerLevel')
+                                },
                             }
                         }
                     },
-                    start() {
-                        for (var item in this.context.elem) {
-                            this.context.elem[item].removeClass('active');
+                    canvas: {
+                        icon: generateIconHtml('square-o', '画布'),
+                        activeBefore: [activeIcon],
+                        inactiveBefore: [inactiveIcon],
+                        nextRules: {
+                            RangeSet: {
+                                icon: `
+                                ${generateIconHtml('arrows', '尺寸调节')}
+                                <div class="editor-toolbox-range-input">
+                                    <input type="number" class="height">
+                                    <input type="number" class="width">
+                                    <input type="submit">
+                                </div>`,
+                                activeBefore: [preventAll],
+                                init(elem) {
+                                    elem.addClass('flex-row');
+                                    elem.children('input[type=submit]').on('click', { elem }, this.submit);
+                                },
+                                submit(event) {
+                                    var elem = event.data.elem;
+                                    var height = elem.children('.height').val();
+                                    var width = elem.children('.width').val();
+                                    if (!Number.isInteger(height) || !Number.isInteger(width)) return;
+                                    height = Number.parseInt(height);
+                                    width = Number.parseInt(width);
+                                    editor.setCanvasRange(width,height);
+                                },
+                                show(elem)
+                                {
+                                    var {height,width} = editor.getCanvasRange();
+                                    elem.children('.height').val(height);
+                                    elem.children('.width').val(width);
+                                }
+                            }
+                        }
+                    },
+                    save: {
+                        icon: generateIconHtml('floppy-o', '保存'),
+                        activeBefore: [activeIcon],
+                        inactiveBefore: [inactiveIcon],
+                        nextRules: {
+                            jpg: {
+                                icon: generateIconHtml('file-image-o', 'jpg'),
+                                activeBefore: [preventAll],
+                                active() {
+
+                                }
+                            },
+                            png: {
+                                icon: generateIconHtml('file-image-o', 'png'),
+                                activeBefore: [preventAll],
+                                active() {
+
+                                }
+                            }
                         }
                     }
-                })
-            }
-            first.sm = this.fSm;
-        }
-        this.initDomEvent = function () {
-            head.on('click', (function () {
-                var nowState = true;
-                return function () {
-                    if (nowState) {
-                        first.removeClass('hidden');
-                        if (first.sm) first.sm.emit('start');
-                        headIcon.removeClass('fa-angle-up');
-                        headIcon.addClass('fa-angle-down');
-                    }
-                    else {
-                        first.addClass('hidden');
-                        second.addClass('hidden');
-                        third.addClass('hidden');
-                        headIcon.removeClass('fa-angle-down');
-                        headIcon.addClass('fa-angle-up');
-                    }
-                    nowState = !nowState;
                 }
-            })());
+            }
         }
 
+        this.init = function () {
+            this.initRouter();
+        }
+        var template = $('<div class="editor-toolbox-cell">');
+        this.generateLayout = function (layer, rules) {
+            for (var item in rules) {
+                var rule = rules[item]
+                var cell = null
+                if (rule._elem) {
+                    cell = rule._elem;
+                }
+                else {
+                    cell = template.clone();
+                    var iconText = rule.icon;
+                    if (iconText && typeof iconText === 'string') {
+                        var icon = $(iconText);
+                        cell.append(icon);
+                    }
+                    cell.on('click', { rule }, this.cellClick);
+                    if (rule.init && typeof rule.init === 'function') {
+                        rule.init(cell);
+                    }
+                }
+                if (rule.show && typeof rule.show === 'function')
+                    rule.show(cell);
+                layer.append(cell);
+                rule._elem = cell;
+                rule._layer = layer;
+            }
+        }
+        this.recycleLayerout = function (rules) {
+            for (var item in rules) {
+                var rule = rules[item];
+                if (rule._elem) {
+                    rule._elem.detach();
+                }
+                rule._layer = null;
+                rule._actived = false;
+            }
+        }
+        this.cellClick = async function (_event) {
+            var rule = _event.data.rule;
+            var promisearray = []
+            var event = {
+                preventStateChange() {
+                    this._canChangeState = false;
+                },
+                preventBoxAnimat() {
+                    this._canBoxAnimat = false;
+                },
+                _canChangeState: true,
+                _canBoxAnimat: true
+            }
+            var parma = { elem: rule._elem, rule, event };
+            var nextIdx = layers.findIndex(v => v === rule._layer) + 1;
+            nextIdx = nextIdx < layers.length - 1 ? nextIdx : -1;
+            if (rule._actived) {
+                var inactiveBefore = rule.inactiveBefore;
+                var inactiveAfter = rule.inactiveAfter;
+                var inactive = rule.inactive;
+                if (inactiveBefore && inactiveBefore instanceof Array) {
 
+                    promisearray = inactiveBefore.map(v => typeof v === 'function' ? v(parma) : null);
+
+                }
+                await Promise.all(promisearray)
+                if (inactive && typeof inactive === 'function')
+                    inactive({ elem: rule._elem, rule, event });
+                if (inactiveAfter && inactiveAfter instanceof Array) {
+                    promisearray = inactiveAfter.map(v => typeof v === 'function' ? v(parma) : null);
+                }
+                if (event._canChangeState) {
+                    rule._actived = !rule._actived;
+                    if (rule._layer && rule._layer.activedRule === rule) {
+                        rule._layer.activedRule = null;
+                    }
+                }
+                if (event._canBoxAnimat && nextIdx > -1) {
+                    self.recycleLayerout(rule.nextRules);
+                    layers[nextIdx].addClass('hidden');
+                }
+                await Promise.all(promisearray)
+            }
+            else {
+                var active = rule.active;
+                var activeBefore = rule.activeBefore;
+                var activeAfter = rule.activeAfter;
+                if (activeBefore && activeBefore instanceof Array) {
+                    promisearray = activeBefore.map(v => typeof v === 'function' ? v(parma) : null);
+                }
+                await Promise.all(promisearray)
+                if (active && typeof active === 'function')
+                    active(parma)
+                if (activeAfter && activeAfter instanceof Array) {
+                    promisearray = activeAfter.map(v => typeof v === 'function' ? v(parma) : null);
+                }
+                if (event._canChangeState) {
+                    rule._actived = !rule._actived;
+                    if (rule._layer && rule._layer.activedRule) {
+                        await self.cellClick({ data: { rule: rule._layer.activedRule } });
+                    }
+                    rule._layer.activedRule = rule;
+                }
+                if (nextIdx > -1) {
+                    if (event._canBoxAnimat && rule.nextRules) {
+                        layers[nextIdx].removeClass('hidden');
+                        self.generateLayout(layers[nextIdx], rule.nextRules);
+                    }
+                }
+                await Promise.all(promisearray)
+            }
+
+        }
+        this.initRouter = function () {
+            this.generateLayout(head, this.Rules);
+        }
         this.init();
     }
     ToolBox.prototype = Object.create(EventBase.prototype);
@@ -377,7 +491,6 @@
             var center = new THREE.Vector3();
             return function (img) {
                 self.position.setFromMatrixPosition(img.obj.matrixWorld);
-                // todo boxposition must to multiply modelview and project and convertTo Source
                 img.obj.geometry.computeBoundingBox();
                 img.obj.geometry.computeBoundingSphere();
                 var box = img.obj.geometry.boundingBox;
@@ -388,10 +501,7 @@
                 ConvertScreenToSourceCoord(boxMin.applyMatrix4(img.obj.modelViewMatrix).applyMatrix4(self.camera.projectionMatrix), element);
                 ConvertScreenToSourceCoord(center.applyMatrix4(img.obj.modelViewMatrix).applyMatrix4(self.camera.projectionMatrix), element);
                 var width = boxMax.x - boxMin.x;
-                var height = boxMax.y -boxMin.y;
-                //ConvertCanvasToSourceCoord(self.position, element)
-                // container.css('left', self.position.x + center.x);
-                // container.css('top', self.position.y - center.y);
+                var height = boxMax.y - boxMin.y;
                 container.css('left', center.x);
                 container.css('top', center.y);
 
@@ -491,7 +601,6 @@
                             self.editorBox.active(this.context.activeImg);
                         }
                         console.log('active', this);
-                        console.log('context', this.context);
                     }
                 }),
                 idel: this.sm.createState('idel', {
@@ -511,25 +620,21 @@
                     start() {
                         console.log('idel', this);
                     },
-                    addLayerLevel()
-                    {
-                        var idx = self.imgs.array.findIndex(v=>v===this.context.activeImg)
-                        if(idx>-1&&idx<self.imgs.array.length-1)
-                        {
+                    addLayerLevel() {
+                        var idx = self.imgs.array.findIndex(v => v === this.context.activeImg)
+                        if (idx > -1 && idx < self.imgs.array.length - 1) {
                             var currentOrder = this.context.activeImg.order;
-                            this.context.activeImg.order = self.imgs.array[idx+1].order
-                            self.imgs.array[idx+1].order = currentOrder;
+                            this.context.activeImg.order = self.imgs.array[idx + 1].order
+                            self.imgs.array[idx + 1].order = currentOrder;
                         }
                         self.imgs.needsUpdate = true;
                     },
-                    diffLayerLevel()
-                    {
-                        var idx = self.imgs.array.findIndex(v=>v===this.context.activeImg)
-                        if(idx>0)
-                        {
+                    diffLayerLevel() {
+                        var idx = self.imgs.array.findIndex(v => v === this.context.activeImg)
+                        if (idx > 0) {
                             var currentOrder = this.context.activeImg.order;
-                            this.context.activeImg.order = self.imgs.array[idx-1].order
-                            self.imgs.array[idx-1].order = currentOrder;
+                            this.context.activeImg.order = self.imgs.array[idx - 1].order
+                            self.imgs.array[idx - 1].order = currentOrder;
                         }
                         self.imgs.needsUpdate = true;
                     }
@@ -544,9 +649,16 @@
             this.Camera.right = width / 2;
             this.Camera.top = height / 2;
             this.Camera.bottom = height / -2;
-            this.Camera.zoom = 1./this.viewScale;
+            this.Camera.zoom = 1. / this.viewScale;
             this.Camera.updateProjectionMatrix();
-            this.Renderer.setSize(width, height , false);
+            this.Renderer.setSize(width, height, false);
+        }
+        this.setCanvasRange = function (width, height) {
+            //todo
+        }
+        this.getCanvasRange = function () {
+            //todo
+            return { width: 0, height: 0 };
         }
         this.onSizeChange();
         window.addEventListener('resize', this.onSizeChange.bind(this));
@@ -575,9 +687,8 @@
             var basicMaterial = new THREE.MeshBasicMaterial({ map: Img, side: THREE.DoubleSide });
             var mesh = new THREE.Mesh(planeGeometry, basicMaterial);
             window.imgs = this.imgs
-            if(Img.image.width> this.canvas.width || Img.image.height>this.canvas.height)
-            {
-                this.viewScale = Math.max(Img.image.width/this.canvas.width,Img.image.height/this.canvas.height);
+            if (Img.image.width > this.canvas.width || Img.image.height > this.canvas.height) {
+                this.viewScale = Math.max(Img.image.width / this.canvas.width, Img.image.height / this.canvas.height);
                 this.onSizeChange();
             }
             this.imgs.array.push({ source: Img, obj: mesh, id: this.idCursor++, order: this.imgs.array.length > 0 ? (this.imgs.array[this.imgs.array.length - 1].order + 1) : 1 });

@@ -43,6 +43,7 @@ html {
     }
 
     .editor-toolbox-container {
+        @toolbox-base:#4d4335;
         position: absolute;
         bottom: 0;
         left: 50%;
@@ -60,14 +61,15 @@ html {
             overflow: hidden;
             display: flex;
             justify-content: space-around;
-            background-color: #4d4335;
-            color: #d3b47a;
+            background-color: @toolbox-base;
+            color: @toolbox-base*rgb(2.74, 2.68, 2.3);
 
             .editor-toolbox-cell {
                 margin: 3px;
                 margin-bottom: 5px;
                 display: flex;
                 justify-content: center;
+                align-items: center;
                 flex-direction: column;
                 text-align: center;
                 border-radius: 6px;
@@ -102,8 +104,8 @@ html {
 
         .editor-toolbox-head {
             position: relative;
-            background: #4d4335;
-            color: #d3b47a;
+            background-color: @toolbox-base;
+            color: @toolbox-base*rgb(2.74, 2.68, 2.3);
             width: 160px;
             height: 24px;
             margin: 0 auto;
@@ -123,6 +125,23 @@ html {
             height: 2px;
             bottom: 0;
             background-color: rgb(41, 41, 41);
+        }
+        .flex-row
+        {
+            flex-direction: row !important;
+        }
+        .editor-toolbox-range-input
+        {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items:center;
+            input[type~=number]
+            {
+                width: 50px;
+                height: 20px;
+                margin: 0 4px;
+            }
         }
 
         .hidden {
