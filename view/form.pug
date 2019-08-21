@@ -1,5 +1,4 @@
 extends ./base/layout.pug
-
 block header
     title 表单填写
 block main
@@ -19,7 +18,7 @@ block main
                 script.
                     wechatGetway.login();
             div( class="user")
-                form(class="input-usenameform" ) 
-                    input( type="text" runname="username" class="input-usename" placeholder="姓名")
+                form(class="input-usenameform" action="form/upstream" method="post" ) 
+                    input( type="text" name="username" class="input-usename" placeholder="姓名")
                     input( type="text" name="userphone" class="input-usephone" placeholder="手机号")
-                    input(type="submit" class="use-button")
+                    input( type="submit" class="use-button")
