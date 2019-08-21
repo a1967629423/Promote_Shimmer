@@ -1,5 +1,4 @@
-@base:#ebe0e6;
-@base01:#bba5b1;
+@base:#bba5b1;
 body,
 html {
     margin: 0;
@@ -222,7 +221,7 @@ html {
 {
     width: 100%;
     height: 100%;
-    background:@base01;
+    background:@base;
     padding: 300px 0 0;
     .block
     {
@@ -259,9 +258,33 @@ html {
                 border-width: 1px;
                 border-style: solid;
                 margin: 40px 0;
-                background:@base;
+                background:@base/255*rgb(255, 255, 255);
                 font-size:26px;
             }
         }
     }
+        .avatar
+        {
+            .head-img
+            {
+                height: 100px;
+                width: 100px;
+                clip-path: circle(50%);
+            }
+            p
+            {
+                margin: 0;
+            }
+        }
+        .head-title
+        {
+            h1
+            {
+                display:inline;
+            }
+            h1:first-child
+            {
+                color: #ffd88f;
+            }
+        }
 }
