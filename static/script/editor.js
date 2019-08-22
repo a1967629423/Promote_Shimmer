@@ -152,8 +152,8 @@ const checkerboader = require('./require/shader/checkerboard').checkerboard;
                                 icon: `
                                 ${generateIconHtml('arrows', '尺寸调节')}
                                 <div class="editor-toolbox-range-input">
-                                    <input type="number" class="height">
-                                    <input type="number" class="width">
+                                    宽:<input type="number" class="width">
+                                    高:<input type="number" class="height">
                                     <div class="btn btn-small change-size">修改</div>
                                 </div>`,
                                 activeBefore: [preventAll],
@@ -721,7 +721,7 @@ const checkerboader = require('./require/shader/checkerboard').checkerboard;
                 this.Renderer.getSize(currentSize);
                 this.offCanvas.height = this.size.y;
                 this.offCanvas.width = this.size.x;
-                this.Renderer.setSize(this.size.x,this.size.y);
+                this.Renderer.setSize(this.size.x,this.size.y,false);
                 this.Render();
                 this.offCanvasCtx.drawImage(this.canvas,0,0);
                 this.offCanvas.toBlob((blob)=>{
