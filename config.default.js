@@ -33,7 +33,7 @@ module.exports = {
     trusted: ["loopback"], // http://expressjs.com/en/guide/behind-proxies.html
   },
   webSideFullUrl:'127.0.0.1:7567',
-  webSideRootPath:'/',
+  webSideRootPath:'/test1/',
   uploadImagePath:'image/',
   uploadAudioPath:'audio/',
   uploadbucketName:'public',
