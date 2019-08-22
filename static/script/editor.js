@@ -729,7 +729,7 @@ const checkerboader = require('./require/shader/checkerboard').checkerboard;
                     downloadIamge(imgurl);
                     console.log(imgurl);
                     this.background.visible = true;
-                    this.Renderer.setSize(currentSize);
+                    this.Renderer.setSize(currentSize.x,currentSize.y,false);
                     this.resume();
                     window.URL.revokeObjectURL(blob);
                 },type)
