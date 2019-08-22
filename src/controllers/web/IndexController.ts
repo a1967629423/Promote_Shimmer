@@ -19,6 +19,7 @@ export class PageController {
         {
             //do something
         }
+        console.log(userInfo);
         return {userInfo};
         
     }

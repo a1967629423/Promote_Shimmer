@@ -5,7 +5,7 @@ console.log("%c( ´ ▽ ` )ﾉ 小小世界中的又一个Web组织，微光网�
   var wechatGetway = {
     login: function (redirect_uri) {
       var uri = redirect_uri && typeof redirect_uri === 'string' ? redirect_uri : location.href;
-      $.get('http://shimmer.neusoft.edu.cn/wechat/web/page/login?redirect_uri=' + uri);
+      location.href = 'http://shimmer.neusoft.edu.cn/wechat/web/page/login?redirect_uri=' + uri;
     }
   }
   function mix(a, b) {

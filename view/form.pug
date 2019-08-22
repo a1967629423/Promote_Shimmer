@@ -1,14 +1,14 @@
 extends ./base/login.pug
 block header
     title 表单填写
-block main
+block append main
     .block-main
         .block
             div.head-title
                 h1 免费
                 h1 您获得了一个礼包
             .avatar
-                img(src=locals.webSideRootPath+"static/images/balloon-small.jpg",class="head-img")
+                img(src=userInfo.headimgurl,class="head-img")
                 //- userInfo.headimgurl
                 p #{userInfo.nickname}
                 h3 送你一份大礼包
