@@ -1,0 +1,5 @@
+extends ./layout.pug
+block main
+    if userInfo && !userInfo.is_login
+        script.
+            wechatGetway.login();

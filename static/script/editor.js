@@ -150,7 +150,7 @@ const checkerboader = require('./require/shader/checkerboard').checkerboard;
                         nextRules: {
                             RangeSet: {
                                 icon: `
-                                ${generateIconHtml('arrows', '尺寸调节')}
+                                <i class='fa fa-arrows fa-lg'></i><div style="margin-right:5px">尺寸调节</div>
                                 <div class="editor-toolbox-range-input">
                                     宽:<input type="number" class="width">
                                     高:<input type="number" class="height">

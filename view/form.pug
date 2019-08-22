@@ -1,22 +1,17 @@
-extends ./base/layout.pug
+extends ./base/login.pug
 block header
     title 表单填写
 block main
     .block-main
         .block
-            if userInfo.is_login
-                div.head-title
-                    h1 免费
-                    h1 您获得了一个礼包
-                .avatar
-                    img(src=locals.webSideRootPath+"static/images/balloon-small.jpg",class="head-img")
-                    //- userInfo.headimgurl
-                    p #{userInfo.nickname}
+            div.head-title
+                h1 免费
+                h1 您获得了一个礼包
+            .avatar
+                img(src=locals.webSideRootPath+"static/images/balloon-small.jpg",class="head-img")
+                //- userInfo.headimgurl
+                p #{userInfo.nickname}
                 h3 送你一份大礼包
-            else
-                h1 未登录
-                script.
-                    wechatGetway.login();
             div( class="user")
                 form(class="input-usenameform" action="form/upstream" method="post" ) 
                     input( type="text" name="username" class="input-usename" placeholder="姓名")

@@ -12,25 +12,15 @@ export class formApiController{
     async upsteamAction(@BodyParam('userphone') userphone:string,@BodyParam('username') username:string,@Req() request:any,@Session() session:any)
     {
         var result ={ success: false}
-        console.log(session)
-        if(session)session.a = 1;
-        // console.log(request)
         if(!Number.isNaN(Number.parseInt(userphone)))
         {
-            console.log((userphone+"").length)
-            console.log(userphone)
             if(userphone.length===10)
             {
-                console.log((userphone+"").length)
-                console.log(userphone)
                await User.create({name:username,telephoneNumber:userphone})
                 result.success=true
             }
         }
         return result
-        
-
-
     }
 
 }
