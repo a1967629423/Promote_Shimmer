@@ -712,24 +712,30 @@ const checkerboader = require('./require/shader/checkerboard').checkerboard;
             // 触发a的单击事件
             a.dispatchEvent(event)
         }
-
-        this.saveImage = function (type) {
-            this.pause();
-            this.background.visible = false;
-            this.Render();
-            this.offCanvas.height = this.canvas.height;
-            this.offCanvas.width = this.canvas.width;
-            this.offCanvasCtx.drawImage(this.canvas,0,0);
-            this.offCanvas.toBlob((blob)=>{
-                var imgurl =window.URL.createObjectURL(blob) 
-                downloadIamge(imgurl);
-                console.log(imgurl);
-                this.background.visible = true;
-                this.resume();
-                window.URL.revokeObjectURL(blob);
-            },type)
-
-        }
+        
+        this.saveImage = (function(){
+            var currentSize = new THREE.Vector2();
+            return function (type) {
+                this.pause();
+                this.background.visible = false;
+                this.Renderer.getSize(currentSize);
+                this.offCanvas.height = this.size.y;
+                this.offCanvas.width = this.size.x;
+                this.Renderer.setSize(this.size.x,this.size.y);
+                this.Render();
+                this.offCanvasCtx.drawImage(this.canvas,0,0);
+                this.offCanvas.toBlob((blob)=>{
+                    var imgurl =window.URL.createObjectURL(blob) 
+                    downloadIamge(imgurl);
+                    console.log(imgurl);
+                    this.background.visible = true;
+                    this.Renderer.setSize(currentSize);
+                    this.resume();
+                    window.URL.revokeObjectURL(blob);
+                },type)
+    
+            }
+        })()
         this.onSizeChange();
         window.addEventListener('resize', this.onSizeChange.bind(this));
         this.Render = function () {

@@ -1,17 +1,19 @@
-import {Controller,Post, BodyParam, Req, UseBefore,} from 'routing-controllers'
-
+import {Controller,Post, BodyParam, Req, UseBefore,Session} from 'routing-controllers'
 import { User } from '../../models/User';
 import bodyParser = require('body-parser');
+import { SessionMiddleware } from '../../middlewares/local/SessionMiddleware';
 @Controller('/form')
+@UseBefore(SessionMiddleware)
 export class formApiController{
     //接收姓名手机号发送到数据库的中间处理过程
     //检查手机号是否是10位阿拉伯数字
     @Post('/upstream')
     @UseBefore(bodyParser.urlencoded({extended:true}))
-    async upsteamAction(@BodyParam('userphone') userphone:string,@BodyParam('username') username:string,@Req() request:any)
+    async upsteamAction(@BodyParam('userphone') userphone:string,@BodyParam('username') username:string,@Req() request:any,@Session() session:any)
     {
         var result ={ success: false}
-
+        console.log(session)
+        if(session)session.a = 1;
         // console.log(request)
         if(!Number.isNaN(Number.parseInt(userphone)))
         {

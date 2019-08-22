@@ -6,6 +6,27 @@ module.exports = {
     username: "root",
     password: "",
   },
+  session:{
+    store:{
+      mysql:{
+        host:"localhost",
+        port:3306,
+        user:'root',
+        password:'',
+        database:"promote_session_dev"
+      },
+      use:'mysql'
+    },
+    option:{
+      key:'promote_session',
+      secret:'28ndTjvbYzVp64rr',
+      resave:false,
+      saveUninitialized:false,
+      cookie:{
+        maxAge:60*60*1000
+      }
+    }
+  },
   listen: {
     port: Number(process.env.PORT) || 7567,
     host: process.env.HOST || "127.0.0.1",
