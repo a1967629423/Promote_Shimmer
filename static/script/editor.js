@@ -698,7 +698,7 @@ const checkerboader = require('./require/shader/checkerboard').checkerboard;
             var r = type.match(/png|jpeg|bmp|gif/)[0];
             return 'image/' + r;
         }
-        function downloadIamge(url, name) {
+        this.downloadIamge = function(url, name) {
             // 生成一个a元素
             var a = document.createElement('a')
             // 创建一个单击事件
@@ -726,7 +726,7 @@ const checkerboader = require('./require/shader/checkerboard').checkerboard;
                 this.offCanvasCtx.drawImage(this.canvas,0,0);
                 this.offCanvas.toBlob((blob)=>{
                     var imgurl =window.URL.createObjectURL(blob) 
-                    downloadIamge(imgurl);
+                    this.downloadIamge(imgurl);
                     console.log(imgurl);
                     this.background.visible = true;
                     this.Renderer.setSize(currentSize.x,currentSize.y,false);

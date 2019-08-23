@@ -24,6 +24,19 @@ block append main
                     //-     div 保存
                 div(class="editor-toolbox-warper hidden second")
                 div(class="editor-toolbox-warper hidden third")
+    .modal
+        div(class='modal-mask hidden')
+        div(class='modal-container hidden')
+            .modal-head
+                .modal-close X
+            .modal-content
+                .modal-title 生成结果 长按保存
+                .modal-body
+                    img(src="")
+            .modal-footer
+
+        
+        
             
 
                 
@@ -31,6 +44,11 @@ block append main
     script(src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/107/three.min.js")
     script(src = locals.webSideRootPath+"static/script/editor.js")
     script.
+        function is_weixin() {
+            var ua = window.navigator.userAgent; 
+            return ua.match(/MicroMessenger/i) == 'micromessenger';
+        }
+
         $(function(){
             var editor = new PictureEditor($('#editor')[0]);
             (new THREE.TextureLoader).load('#{qr.url}',function(qrcode){
@@ -39,6 +57,16 @@ block append main
             });
             window.editor = editor;
             var toolbox = new ToolBox(editor);
+            if(is_weixin())
+            {
+                editor.downloadIamge = function(url){
+                    $('.modal img').attr('src',url);
+                    $('.modal-mask,.modal-container').removeClass('hidden')
+                }
+            }
+            $('.modal-close,.modal-mask').on('click',function(){
+                $('.modal-mask,.modal-container').addClass('hidden')
+            })
             //- function test(clicked){
             //-     if(clicked.length>0)
             //-     {
