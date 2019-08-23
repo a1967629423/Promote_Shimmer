@@ -39,7 +39,6 @@ export class UserCenterService {
             fetch('http://shimmer.neusoft.edu.cn/wechat/web/api/me', { method: 'POST', headers: { 'Cookie': `wechat_token=${wechat_token}` } })
                 .then(res => res.json()).then(async (v: UserInfo | undefined) => {
                     if (v && v.success) {
-                        v.is_login = true;
                         result.info = v;
                         if (v.is_login) {
                             //do something
@@ -53,9 +52,7 @@ export class UserCenterService {
                                 
                                 result.model = user;
                             }
-                            
                             (<UserInfo_Success>result.info).id = user.id;
-                            console.log(result.info);
                         }
                         
                         res(result)
