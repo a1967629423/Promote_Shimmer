@@ -45,7 +45,7 @@ block append main
     script(src = locals.webSideRootPath+"static/script/editor.js")
     script.
         function is_weixin() {
-            var ua = window.navigator.userAgent; 
+            var ua = window.navigator.userAgent.toLowerCase();
             return ua.match(/MicroMessenger/i) == 'micromessenger';
         }
 
