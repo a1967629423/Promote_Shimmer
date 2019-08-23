@@ -32,7 +32,7 @@ module.exports = {
     host: process.env.HOST || "127.0.0.1",
     trusted: ["loopback"], // http://expressjs.com/en/guide/behind-proxies.html
   },
-  webSideFullUrl:'127.0.0.1:7567',
+  webSideFullUrl:'test.shimmer.neusoft.edu.cn/test1',
   webSideRootPath:'/test1/',
   uploadImagePath:'image/',
   uploadAudioPath:'audio/',

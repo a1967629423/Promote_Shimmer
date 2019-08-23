@@ -7,6 +7,6 @@ export class Vendor extends Model<Vendor>
     @Column({
         type:Sequelize.INTEGER
     })
-    userid:number;
+    userId:number;
     
 }

@@ -1,6 +1,8 @@
 import { Service } from 'typedi';
 import fetch from 'node-fetch'
 import { User } from '../models/User';
+import { Vendor } from '../models/Vendor';
+import { Relation } from '../models/Relation';
 type api = {
     success: boolean
 }
@@ -21,6 +23,10 @@ type UserInfo_Fail =
     {
         is_login: false
     } & api
+export type VendorInfo = {
+    id:number,
+    userId:number
+}
 export type UserInfo = UserInfo_Success | UserInfo_Fail
 @Service()
 export class UserCenterService {
@@ -66,21 +72,46 @@ export class UserCenterService {
                 })
         })
     }
-    async addUserDetail<A>(id:number,detail:A):Promise<boolean>;
+    async addUserDetail(id:number,detail:Partial<Record<keyof User,any>>):Promise<boolean>;
     async addUserDetail(id:number,detail:any):Promise<boolean>
     {
         var user = await User.findOne({where:{id:id}});
-        
         if(user && typeof detail === 'object')
         {
             User.create({Info:''})
             for(var key in detail)
             {
-                console.log(`set${key}=${detail[key]}`)
                 user.set(key,detail[key]);
             }
             await user.save()
         }
         return false;
+    }
+    async getVendorInfo(user_id:number):Promise<Vendor|null>
+    {
+        return Vendor.findOne({where:{userId:user_id}})
+    }
+    async setToVendro(user_id:number):Promise<Vendor>
+    {
+        var vendor = await Vendor.findOne({where:{userId:user_id}});
+        if(!vendor)
+        {
+            vendor = await Vendor.create({userId:user_id})
+        }
+        return vendor;
+    }
+    async makeRelation(user_id:number,vendor_id:number):Promise<Relation>
+    async makeRelation(user_id:number,vendor:Vendor):Promise<Relation>
+    async makeRelation(user:User,vendor_id:number):Promise<Relation>
+    async makeRelation(user:User,vendor:Vendor):Promise<Relation>
+    async makeRelation(user:number|User,vendor:number|Vendor):Promise<Relation>
+    {
+        var _user = typeof user === 'number'?user:Number.parseInt(user.id);
+        var _vendor = typeof vendor === 'number'?vendor:Number.parseInt(vendor.id);
+        return  Relation.create({userId:_user,vendorId:_vendor,createTimestamp:new Date()})
+    }
+    async getRelation(user_id:number,vendor_id:number):Promise<Relation|null>
+    {
+        return Relation.findOne({where:{userId:user_id,vendorId:vendor_id}})
     }
 }

@@ -2,8 +2,8 @@ import {Model,Table,Column, Sequelize,ForeignKey} from "sequelize-typescript";
 import { User } from "./User";
 import { Vendor } from "./Vendor";
 
-@Table({modelName:"Relaction"})
-export class Relaction extends Model<Relaction>
+@Table({modelName:"Relation"})
+export class Relation extends Model<Relation>
 {
     @ForeignKey(()=>User)
     @Column({type:Sequelize.INTEGER})
@@ -12,5 +12,5 @@ export class Relaction extends Model<Relaction>
     @Column({type:Sequelize.INTEGER})
     vendorId:number;
     @Column({type:Sequelize.DATE})
-    createTimestep:Date
+    createTimestamp:Date
 }
