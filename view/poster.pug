@@ -57,7 +57,7 @@ block append main
             });
             window.editor = editor;
             var toolbox = new ToolBox(editor);
-            if(is_weixin())
+            if(!is_weixin())
             {
                 editor.downloadIamge = function(url){
                     $('.modal img').attr('src',url);

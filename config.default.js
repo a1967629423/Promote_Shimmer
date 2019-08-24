@@ -29,7 +29,7 @@ module.exports = {
   },
   listen: {
     port: Number(process.env.PORT) || 7567,
-    host: process.env.HOST || "127.0.0.1",
+    host: process.env.HOST || "192.168.0.107",
     trusted: ["loopback"], // http://expressjs.com/en/guide/behind-proxies.html
   },
   webSideFullUrl:'test.shimmer.neusoft.edu.cn/test1',
