@@ -1,9 +1,10 @@
-import {Controller,Post, BodyParam, UseBefore, Session} from 'routing-controllers'
+import {Controller,Post, BodyParam, UseBefore, Session, Get,Res} from 'routing-controllers'
 import { SessionMiddleware } from '../../middlewares/local/SessionMiddleware';
 // import Container from 'typedi';
 import { UserCenterService, UserInfo } from '../../services/UserCenterService';
 import { GetUserMiddleware } from '../../middlewares/local/GetUserMiddleware';
 import Container from 'typedi';
+import captcha from 'svg-captcha'
 @Controller('/form')
 @UseBefore(SessionMiddleware)
 export class formApiController{
@@ -11,29 +12,52 @@ export class formApiController{
     //检查手机号是否是10位阿拉伯数字
     @Post('/upstream')
     @UseBefore(GetUserMiddleware)
-    async upsteamAction(@BodyParam('userphone') userphone:string,@BodyParam('username') username:string,@BodyParam('userInfo') userInfo:UserInfo,@Session() session:any)
+    async upsteamAction(@BodyParam('userphone') userphone:string,@BodyParam('username') username:string , @BodyParam('captcha') captcha:string,@BodyParam('userInfo') userInfo:UserInfo,@Session() session:any)
     {
-        var result ={ success: false}
+        var result ={ success: false,errorInfo:''}
         var vendor = session.vendor;
-        console.log(session);
-        if(!Number.isNaN(Number.parseInt(userphone))&& userInfo.is_login && !Number.isNaN(Number.parseInt(vendor)))
+        if(!/^1(3|4|5|6|7|8|9)\d{9}$/.test(userphone))
         {
-            session.vendor = null;
-            
-            if(userphone.length===10)
-            {
-                var services = Container.get(UserCenterService)
-                await services.addUserDetail(userInfo.id,{telephoneNumber:userphone,name:username})
-                var relation = await services.getRelation(userInfo.id,vendor);
-                if(!relation)
-                {
-                    await services.makeRelation(userInfo.id,vendor);
-                }
-                result.success=true
-                
-            }
+            result.errorInfo = '手机号填写不正确';
+            console.log(userphone)
+            return result;
         }
+        if(!userInfo.is_login)
+        {
+            result.errorInfo = '微信未授权';
+            return result;
+        }
+        if(Number.isNaN(Number.parseInt(vendor)))
+        {
+            result.errorInfo = '链接错误';
+            return result;
+        }
+        if(!captcha||!session.captcha||captcha!==session.captcha)
+        {
+            result.errorInfo='验证码错误';
+            return result;
+        }
+        session.vendor = null;
+        var services = Container.get(UserCenterService)
+        await services.addUserDetail(userInfo.id,{telephoneNumber:userphone,name:username})
+        var relation = await services.getRelation(userInfo.id,vendor);
+        if(!relation)
+        {
+            await services.makeRelation(userInfo.id,vendor);
+        }
+        result.success=true
         return result
+    }
+    @Get('/captcha')
+    async getCaptchaAction(@Session() session:any,@Res() response:any)
+    {
+        var captchaObj = captcha.createMathExpr({
+            noise:3,
+            color:true
+        });
+        session.captcha = captchaObj.text;
+        response.type('svg');
+        return captchaObj.data;
     }
 
 }

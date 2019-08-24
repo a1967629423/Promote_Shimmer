@@ -13,7 +13,28 @@ block append main
                 p #{userInfo.nickname}
                 h3 送你一份大礼包
             div( class="user")
-                form(class="input-usenameform" action="form/upstream" method="post" ) 
+                form(class="input-usenameform" id="infoForm" action="form/upstream" method="post" ) 
                     input( type="text" name="username" class="input-usename" placeholder="姓名")
                     input( type="text" name="userphone" class="input-usephone" placeholder="手机号")
-                    input( type="submit" class="use-button")
+                    .captcha
+                        input( type="text" name="captcha" class="input-captcha" placeholder="验证码")
+                        img(class="img-captcha" src="form/captcha")
+                    .user-button 提交
+            script.
+                function updateCaptcha()
+                {
+                    $('.img-captcha').attr('src','form/captcha?time='+Date.now());
+                }            
+                $('.user-button').on('click',function(){
+                    $.post('form/upstream',$('#infoForm').serialize(),function(data){
+                        if(data.success)
+                        {
+                            alert('提交成功');
+                        }
+                        else{
+                            alert("提交失败\n"+data.errorInfo?data.errorInfo:'');
+                        }
+                        updateCaptcha();
+                    });
+                })
+                $('.img-captcha').on('click',updateCaptcha)

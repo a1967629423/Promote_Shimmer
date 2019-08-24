@@ -6,6 +6,7 @@ import qrcode from 'qrcode'
 import { GetUserMiddleware } from '../../middlewares/local/GetUserMiddleware';
 import { SessionMiddleware } from '../../middlewares/local/SessionMiddleware';
 import { GetVendorMiddleware } from '../../middlewares/local/GetVendorMiddleware';
+
 @Controller()
 export class PageController {
     @Get('/')
@@ -20,7 +21,7 @@ export class PageController {
     async formPage(@Req() request: any, @Res() resolve: any, @BodyParam('userInfo') userInfo: UserInfo, @QueryParam('vendor') vendor: string, @Session() session: any) {
         if (!Number.isNaN(Number.parseInt(vendor)))
             session.vendor = Number.parseInt(vendor);
-        return { userInfo };
+        return { userInfo};
 
     }
 

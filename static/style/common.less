@@ -1,4 +1,4 @@
-@base:#bba5b1;
+@base:rgb(212,184,157);
 body,
 html {
     margin: 0;
@@ -313,13 +313,13 @@ html {
     {
         position: relative;
         border-style: solid;
-        border-color:black;
+        border-color:@base*0.6;
         border-radius: 20px;
-        box-shadow: 0 0 24px black;
+        box-shadow: 0 0 24px rgba(0,0,0,0.8);
         margin: 0 auto;
         color: #444444;
         width: 90%;
-        height: 500px;
+        height: 550px;
         text-align: center;
         background: white;
         .user
@@ -334,18 +334,40 @@ html {
                 border-radius: 4px;
                 border-width: 1px;
                 border-style: solid;
+                border-color: @base*0.8;
                 margin: 10px 0;
+                box-shadow: 0 0 3px @base * 0.4 inset;
+                transition: .3s;
             }
-            input[type=submit]
+            input[type=text]:hover
+            {
+                box-shadow: 0 0 8px @base * 1.1,0 0 4px @base;
+            }
+            .captcha
+            {
+                display: flex;
+                justify-content: flex-end;
+                width: 90%;
+                margin: auto;
+                .input-captcha
+                {
+                    width: 120px;
+                }
+                
+            }
+
+            .user-button
             {
                 width: 85%;
                 height: 50px;
                 border-radius: 10px;
                 border-width: 1px;
                 border-style: solid;
-                margin: 40px 0;
-                background:@base/255*rgb(255, 255, 255);
+                border-color: @base*0.8;
+                margin: 40px auto;
+                background:@base*1.2;
                 font-size:26px;
+                line-height: 50px;
             }
         }
     }
