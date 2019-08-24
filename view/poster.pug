@@ -57,13 +57,14 @@ block append main
             });
             window.editor = editor;
             var toolbox = new ToolBox(editor);
-            if(!is_weixin())
+            if(is_weixin())
             {
-                editor.downloadIamge = function(url){
-                    $('.modal img').attr('src',url);
-                    $('.modal-mask,.modal-container').removeClass('hidden')
-                }
+
             }
+            editor.downloadIamge = function(url){
+                $('.modal img').attr('src',url);
+                $('.modal-mask,.modal-container').removeClass('hidden')
+            }            
             $('.modal-close,.modal-mask').on('click',function(){
                 $('.modal-mask,.modal-container').addClass('hidden')
             })
