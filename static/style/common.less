@@ -9,9 +9,10 @@ html {
     width: 100%;
     height: 100%;
 }
-
+@poster-box-shadow:0 0 12px rgba(0, 0, 0, 0.664);
 .poster-container {
     @poster-base:#4d4335;
+
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -38,7 +39,7 @@ html {
                 width: 100%;
                 height: 80%;
                 border: 2px solid #7a7a7a;
-                box-shadow: 0 0 12px #000000cf;
+                box-shadow: @poster-box-shadow;
             }
         }
     }
@@ -231,7 +232,7 @@ html {
     width: 340px;
     border-radius: 10px;
     background-color: #c5c5c5;
-    box-shadow: 0 0 12px #000000cf;
+    box-shadow: @poster-box-shadow;
     box-sizing:border-box;
     padding: 5px;
     color: #464646;
@@ -240,13 +241,14 @@ html {
     .modal-head
     {
         display: flex;
-        justify-content: right;
+        justify-content: flex-end;
         .modal-close
         {
             margin: 5px 10px;
             height: 20px;
             text-shadow: 0 0 3px;
             color: #444444;
+            // wechat
         }
     }
     .modal-content
@@ -259,7 +261,7 @@ html {
         
         .modal-title
         {
-            text-shadow: 0 0 1px #000000cf;
+            text-shadow: 0 0 1px;
             
             width: 100%;
             padding: 0 5px;
@@ -275,6 +277,10 @@ html {
             justify-content: center;
             img{
                 max-width: 100%;
+            }
+            .wechat
+            {
+                max-height: 340px;
             }
         }
     }

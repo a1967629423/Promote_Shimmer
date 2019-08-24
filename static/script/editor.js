@@ -698,14 +698,14 @@ const checkerboader = require('./require/shader/checkerboard').checkerboard;
             var r = type.match(/png|jpeg|bmp|gif/)[0];
             return 'image/' + r;
         }
-        this.downloadIamge = function(url, name) {
+        this.downloadIamge = function(url) {
             // 生成一个a元素
             var a = document.createElement('a')
             // 创建一个单击事件
             var event = new MouseEvent('click')
 
             // 将a的download属性设置为我们想要下载的图片名称，若name不存在则使用‘下载图片名称’作为默认名称
-            a.download = name || '保存'
+            a.download = '保存'
             // 将生成的URL设置为a.href属性
             //a.href = fixtype(url)
             a.href = url;
@@ -726,7 +726,7 @@ const checkerboader = require('./require/shader/checkerboard').checkerboard;
                 this.offCanvasCtx.drawImage(this.canvas,0,0);
                 this.offCanvas.toBlob((blob)=>{
                     var imgurl =window.URL.createObjectURL(blob) 
-                    this.downloadIamge(imgurl);
+                    this.downloadIamge(imgurl,this.offCanvas.toDataURL(type));
                     console.log(imgurl);
                     this.background.visible = true;
                     this.Renderer.setSize(currentSize.x,currentSize.y,false);

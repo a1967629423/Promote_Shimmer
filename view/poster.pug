@@ -59,10 +59,10 @@ block append main
             var toolbox = new ToolBox(editor);
             if(is_weixin())
             {
-
+                $('.modal img').addClass('wechat');
             }
-            editor.downloadIamge = function(url){
-                $('.modal img').attr('src',url);
+            editor.downloadIamge = function(url,dataUrl){
+                $('.modal img').attr('src',dataUrl);
                 $('.modal-mask,.modal-container').removeClass('hidden')
             }            
             $('.modal-close,.modal-mask').on('click',function(){
