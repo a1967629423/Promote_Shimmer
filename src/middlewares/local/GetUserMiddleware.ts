@@ -5,10 +5,6 @@ import { UserCenterService } from "../../services/UserCenterService";
 export class GetUserMiddleware implements ExpressMiddlewareInterface {
 
     async use(request: any, response: any, next: (err: any) => any) {
-        if(request.session)
-        {
-
-        }
         var info = await Container.get(UserCenterService).getUserInfo(request.cookies.wechat_token);
         request.body.userInfo = info.info;
         if(info.model)

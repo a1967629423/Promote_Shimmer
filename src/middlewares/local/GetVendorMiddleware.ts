@@ -5,11 +5,6 @@ import { UserCenterService } from "../../services/UserCenterService";
 export class GetVendorMiddleware implements ExpressMiddlewareInterface {
 
     async use(request: any, response: any, next: (err: any) => any) {
-        if(request.session)
-        {
-
-        }
-        console.log(request.body.userInfo)
         var userInfo = request.body.userInfo;
         if(userInfo.is_login)
         {

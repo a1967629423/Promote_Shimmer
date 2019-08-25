@@ -1,6 +1,14 @@
-extends ./base/layout.pug
+extends ./base/login.pug
 
 block header
     title 用户中心
-block main
-    h1 Hello World
+    link(rel="stylesheet", href=locals.webSideRootPath+"static/style/usercenter.css")
+block append main
+    .page-head
+        .user-head
+            img(class='head-img')
+            .user-nickname #{userInfo.nickname}
+    .data-table
+        .data-table-title 用户统计
+        table.data-table-body
+            

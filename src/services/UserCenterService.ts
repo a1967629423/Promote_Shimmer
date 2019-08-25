@@ -55,12 +55,10 @@ export class UserCenterService {
                                     nickName:v.nickname,
                                     headImgUrl:v.headimgurl,
                                 });
-                                
                                 result.model = user;
                             }
                             (<UserInfo_Success>result.info).id = user.id;
                         }
-                        
                         res(result)
                         //res({success:true,is_login:true,openid:'123',unionid:'56',nickname:'a',headimgurl:'a',sex:1});
                     }
@@ -110,8 +108,43 @@ export class UserCenterService {
         var _vendor = typeof vendor === 'number'?vendor:Number.parseInt(vendor.id);
         return  Relation.create({userId:_user,vendorId:_vendor,createTimestamp:new Date()})
     }
-    async getRelation(user_id:number,vendor_id:number):Promise<Relation|null>
+
+    async checkRelation(user_id:number,vendor_id:number):Promise<Relation|null>
     {
         return Relation.findOne({where:{userId:user_id,vendorId:vendor_id}})
+    }
+    async getRelation(option:{userId:number,vendorId:number}):Promise<Relation|null>
+    async getRelation(option:{userId:number}):Promise<Vendor[]|null>
+    async getRelation(option:{vendorId:number}):Promise<User[]|null>
+    async getRelation(option:{userId?:number,vendorId?:number}):Promise<Relation|Vendor[]|User[]|null>
+    {
+        if(option.userId)
+        {
+            if(option.vendorId)
+            {
+                return Relation.findOne({where:{userId:option.userId,vendorId:option.vendorId}});
+            }
+            var user = await User.findOne({where:{id:option.userId},include:[{model:Relation,include:[Vendor]}]});
+            var vendors = null;
+            if(user)
+            {
+                var relations = user.relations;
+                vendors = relations.map(v=>v.vendor);
+            }
+            return vendors;
+            
+        }else if(option.vendorId)
+        {
+            var vendor= await Vendor.findOne({where:{id:option.vendorId},include:[{model:Relation,include:[User]}]})
+            var users = null
+            if(vendor)
+            {
+                var relations = vendor.relations||[];
+                users= relations.map(v=>v.user);
+            }
+            
+            return users;
+        }
+        return null;
     }
 }

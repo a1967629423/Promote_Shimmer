@@ -1,5 +1,6 @@
-import {Model,Table,Column, Sequelize,ForeignKey} from "sequelize-typescript";
+import {Model,Table,Column, Sequelize,ForeignKey, HasMany} from "sequelize-typescript";
 import { User } from "./User";
+import { Relation } from "./Relation";
 @Table({modelName:"Vendor"})
 export class Vendor extends Model<Vendor>
 {
@@ -8,5 +9,9 @@ export class Vendor extends Model<Vendor>
         type:Sequelize.INTEGER
     })
     userId:number;
+    @HasMany(()=>Relation,'vendorId')
+    relations:Relation[]
+
+
     
 }

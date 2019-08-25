@@ -1,4 +1,4 @@
-import {Model,Table,Column, Sequelize,ForeignKey} from "sequelize-typescript";
+import {Model,Table,Column, Sequelize,ForeignKey, BelongsTo} from "sequelize-typescript";
 import { User } from "./User";
 import { Vendor } from "./Vendor";
 
@@ -13,4 +13,8 @@ export class Relation extends Model<Relation>
     vendorId:number;
     @Column({type:Sequelize.DATE})
     createTimestamp:Date
+    @BelongsTo(()=>User,'userId')
+    user:User
+    @BelongsTo(()=>Vendor,'vendorId')
+    vendor:Vendor
 }

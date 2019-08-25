@@ -1,4 +1,5 @@
-import {Model,Table,Column, Sequelize} from "sequelize-typescript";
+import {Model,Table,Column, Sequelize, HasMany} from "sequelize-typescript";
+import { Relation } from "./Relation";
 export interface LiveAddress {
     nation:string,
     province:string
@@ -22,4 +23,6 @@ export class User extends Model<User> {
     address:LiveAddress
     @Column({type:Sequelize.JSON})
     ext:any
+    @HasMany(()=>Relation,'userId')
+    relations:Relation[]
 }

@@ -32,7 +32,7 @@ export function GetRelationMiddleware(option:relationGetOption={}): NextHandleFu
         var vendor_id =  option.Vendor?Number.parseInt( req.query[option.Vendor.QueryString]):req.body.vendorInfo.id
         var user_id = option.User?Number.parseInt(req.query[option.User.QueryString]):req.body.userInfo.id;
         var server = Container.get(UserCenterService);
-        var relation = await server.getRelation(user_id,vendor_id);
+        var relation = await server.checkRelation(user_id,vendor_id);
         if(!relation)
         {
             relation = await server.makeRelation(user_id,vendor_id);

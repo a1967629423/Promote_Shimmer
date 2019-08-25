@@ -19,7 +19,6 @@ export class formApiController{
         if(!/^1(3|4|5|6|7|8|9)\d{9}$/.test(userphone))
         {
             result.errorInfo = '手机号填写不正确';
-            console.log(userphone)
             return result;
         }
         if(!userInfo.is_login)
@@ -27,7 +26,7 @@ export class formApiController{
             result.errorInfo = '微信未授权';
             return result;
         }
-        if(Number.isNaN(Number.parseInt(vendor)))
+        if(!vendor)
         {
             result.errorInfo = '链接错误';
             return result;
@@ -40,7 +39,7 @@ export class formApiController{
         session.vendor = null;
         var services = Container.get(UserCenterService)
         await services.addUserDetail(userInfo.id,{telephoneNumber:userphone,name:username})
-        var relation = await services.getRelation(userInfo.id,vendor);
+        var relation = await services.checkRelation(userInfo.id,vendor);
         if(!relation)
         {
             await services.makeRelation(userInfo.id,vendor);
