@@ -59,9 +59,9 @@ export class PageController {
             isVendor: !!vendorInfo,
             vendor: vendorInfo,
             relation: vendorInfo ?
-                service.getRelation({ vendorId: vendorInfo.id }) :
+                await service.getRelation({ vendorId: vendorInfo.id }) :
                 userInfo.is_login ?
-                    service.getRelation({ userId: userInfo.id }) : []
+                await service.getRelation({ userId: userInfo.id }) : []
         };
     }
 }

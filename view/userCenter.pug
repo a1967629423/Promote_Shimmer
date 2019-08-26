@@ -11,4 +11,5 @@ block append main
     .data-table
         .data-table-title 用户统计
         table.data-table-body
-            
+            -for(var key in relation)
+                li #{`${relation[key].name} ${relation[key].telephoneNumber}`}

@@ -57,7 +57,14 @@ export class UserCenterService {
                                 });
                                 result.model = user;
                             }
-                            (<UserInfo_Success>result.info).id = user.id;
+                            var successInfo = <UserInfo_Success>result.info;
+                            successInfo.id = user.id;
+                            if(successInfo.headimgurl!==user.headImgUrl||successInfo.nickname!==user.headImgUrl)
+                            {
+                                user.headImgUrl = successInfo.headimgurl;
+                                user.nickName = successInfo.nickname;
+                                await user.save()
+                            }
                         }
                         res(result)
                         //res({success:true,is_login:true,openid:'123',unionid:'56',nickname:'a',headimgurl:'a',sex:1});
