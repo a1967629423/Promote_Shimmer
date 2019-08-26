@@ -51,5 +51,5 @@ module.exports = {
     maxAge: 86400,
     optionsSuccessStatus: 200,
   },
-  cipher:'qwlkejioxc@90'
+  cipher:{key:'vpfpjM$l%P*maU4j',vi:'C&ZUlqr%%9rryXBT'}
 }

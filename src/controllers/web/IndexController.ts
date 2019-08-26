@@ -24,7 +24,7 @@ export class PageController {
         if(disable_cipher!=='1')
         {
             if (vendor) {
-                session.vendor = Number.parseInt(crypto.createDecipher('aes-256-gcm', config.cipher).update(vendor, 'hex', 'utf8'))
+                session.vendor = Number.parseInt(crypto.createDecipheriv('aes-128-gcm',Buffer.from(config.cipher.key) ,Buffer.from(config.cipher.vi)).update(vendor, 'hex', 'utf8'))
             }
         }
         else
@@ -42,7 +42,7 @@ export class PageController {
         let fullurl = config.webSideFullUrl;
         let qr = { url: '' }
         if (userInfo.is_login) {
-            var c_id = crypto.createCipher('aes-256-gcm', config.cipher).update(vednorInfo.id.toFixed(), 'utf8', 'hex');
+            var c_id = crypto.createCipheriv('aes-128-gcm',Buffer.from(config.cipher.key) ,Buffer.from(config.cipher.vi)).update(vednorInfo.id.toFixed(),'utf8','hex')
             qr.url = await qrcode.toDataURL(`${fullurl}/form?vendor=${c_id}`, { type: 'image/jpeg', margin: 0, width: 200 })
             return { userInfo, qr }
         }

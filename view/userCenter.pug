@@ -3,13 +3,21 @@ extends ./base/login.pug
 block header
     title 用户中心
     link(rel="stylesheet", href=locals.webSideRootPath+"static/style/usercenter.css")
+    link(rel="stylesheet", href='https://unpkg.com/element-ui@2.11.0/lib/theme-chalk/index.css')
+    script(src="https://cdn.jsdelivr.net/npm/vue")
+    script(src="https://unpkg.com/element-ui@2.11.0/lib/index.js")
 block append main
-    .page-head
-        .user-head
-            img(class='head-img')
-            .user-nickname #{userInfo.nickname}
-    .data-table
-        .data-table-title 用户统计
-        table.data-table-body
-            -for(var key in relation)
-                li #{`${relation[key].name} ${relation[key].telephoneNumber}`}
+    #app
+        .page-head
+            .user-head
+                img(class='head-img')
+                .user-nickname #{userInfo.nickname}
+        .data-table
+            .data-table-title 用户统计
+            table.data-table-body
+                -for(var key in relation)
+                    li #{`${relation[key].name} ${relation[key].telephoneNumber}`}
+    script.
+        new Vue({
+            el:'#app'
+        })
