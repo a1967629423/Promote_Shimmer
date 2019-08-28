@@ -1,3 +1,8 @@
+@HeadHeight:60px;
+body
+{
+    padding-top: @HeadHeight;
+}
 .text-col
 {
     text-align: center;
@@ -13,24 +18,51 @@
 }
 .el-header
 {
-    line-height: 60px;
-    height: 13.6vh;
+    background:rgb(140, 197, 255);
     .e-header
     {
-        background:rgb(140, 197, 255);
-        height: 13.6vh;
+        h1{
+            height: @HeadHeight;
+            line-height: @HeadHeight;
+            font-size: 1.2em;
+            margin: 0;
+        }
     }
-}
-.e-main
-{
 }
 .e-table
 {
     height: 86.4vh;
 
 }
-.e-dropdown
+.el-dropdown
 {
-    padding-top: 15px;
-    padding-left: 15px;
+    float: right;
+    height: @HeadHeight;
+    .fa{
+        vertical-align: middle;
+    }
+
+}
+.el-dropdown:before
+{
+    display: inline-block;
+    vertical-align: middle;
+    content: '';
+    height: 100%;
+}
+.sidebar-active-btn
+{
+    height: @HeadHeight;
+    display:flex;
+    align-items: center;
+    font-size: 14px;
+    color: #606266;
+}
+.el-header
+{
+    position: fixed;
+    width: 100%;
+    height: @HeadHeight;
+    z-index: 10;
+    top:0;
 }
