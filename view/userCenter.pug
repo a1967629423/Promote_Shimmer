@@ -17,7 +17,7 @@ block append main
                     el-col( :span="8",class="text-col")
                         h1 用户填写记录
                     el-col( :span="8")
-                        el-dropdown(class="e-dropdown",@click.native="settingBtnClick")
+                        el-dropdown(@click.native="settingBtnClick",trigger="click")
                             i(class="fa fa-cog  fa-2x",:class="{'fa-spin-once':settingIconAnimation}")
                             el-dropdown-menu(slot="dropdown")
                                 el-dropdown-item  查看
