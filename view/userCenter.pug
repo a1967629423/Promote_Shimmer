@@ -31,20 +31,19 @@ block append main
                 .el-pagination-block
                     el-pagination(background,layout="prev,pager,next",:total="tableData.length",:page-size="pageSize",:current-page.sync="currentPage",@current-change="currentChange")
         el-footer(class="e-footer")
+        -   
+            var parsed = relation.map((v)=>{
+                var createdAt = v.createdAt;
+                var result = {name:v.name,phoneNumber:v.telephoneNumber,date:`${createdAt.getFullYear()}-${createdAt.getMonth()+1}-${createdAt.getDate()}`}
+                return result;
+            });
     script.
-  
+        var data = !{JSON.stringify(parsed)}
         new Vue({
             el:'#app',
             data:function(){
                 return {
-                    tableData: Array(20).fill({}).map(function(v,i){
-                        var item = {
-                            date:'2016-05-02',
-                            name:'王小虎'+i,
-                            phoneNumber:'15390880891'
-                        }
-                        return item
-                    }),
+                    tableData: data,
                     pageSize:10,
                     visualData:[],
                     currentPage:1,
