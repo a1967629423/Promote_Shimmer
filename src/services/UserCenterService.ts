@@ -55,8 +55,8 @@ export class UserCenterService {
                                     nickName:v.nickname,
                                     headImgUrl:v.headimgurl,
                                 });
-                                result.model = user;
                             }
+                            result.model = user;
                             var successInfo = <UserInfo_Success>result.info;
                             successInfo.id = user.id;
                             if(successInfo.headimgurl!==user.headImgUrl||successInfo.nickname!==user.headImgUrl)
@@ -113,7 +113,7 @@ export class UserCenterService {
     {
         var _user = typeof user === 'number'?user:Number.parseInt(user.id);
         var _vendor = typeof vendor === 'number'?vendor:Number.parseInt(vendor.id);
-        return  Relation.create({userId:_user,vendorId:_vendor,createTimestamp:new Date()})
+        return  Relation.create({userId:_user,vendorId:_vendor})
     }
 
     async checkRelation(user_id:number,vendor_id:number):Promise<Relation|null>

@@ -7,7 +7,7 @@ export interface LiveAddress {
     county:string
 
 }
-@Table({modelName:"User"})
+@Table({modelName:"User",timestamps:true})
 export class User extends Model<User> {
     @Column({type:Sequelize.STRING})
     name:string

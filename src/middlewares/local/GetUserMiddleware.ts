@@ -8,9 +8,12 @@ export class GetUserMiddleware implements ExpressMiddlewareInterface {
         var info = await Container.get(UserCenterService).getUserInfo(request.cookies.wechat_token);
         request.body.userInfo = info.info;
         if(info.model)
-        request.session.user={
-            id:info.model.id,
-            openid:info.model.openId
+        {
+            //console.log(`timestamps:${info.model.createdAt.getFullYear()}-${info.model.createdAt.getMonth()+1}-${info.model.createdAt.getDate()}`)
+            request.session.user={
+                id:info.model.id,
+                openid:info.model.openId
+            }
         }
         next(null);
     }
