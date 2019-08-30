@@ -2,7 +2,7 @@ import {Model,Table,Column, Sequelize,ForeignKey, BelongsTo} from "sequelize-typ
 import { User } from "./User";
 import { Vendor } from "./Vendor";
 
-@Table({modelName:"Relation"})
+@Table({modelName:"Relation",timestamps:true})
 export class Relation extends Model<Relation>
 {
     @ForeignKey(()=>User)
@@ -11,8 +11,6 @@ export class Relation extends Model<Relation>
     @ForeignKey(()=>Vendor)
     @Column({type:Sequelize.INTEGER})
     vendorId:number;
-    @Column({type:Sequelize.DATE})
-    createTimestamp:Date
     @BelongsTo(()=>User,'userId')
     user:User
     @BelongsTo(()=>Vendor,'vendorId')
