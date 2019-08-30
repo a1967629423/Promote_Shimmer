@@ -32,16 +32,14 @@ block append main
                     el-pagination(background,layout="prev,pager,next",:total="tableData.length",:page-size="pageSize",:current-page.sync="currentPage",@current-change="currentChange")
         el-footer(class="e-footer")
     script.
-  
+        #{isVendor?relation.map((user)=>{}):null}
         new Vue({
             el:'#app',
             data:function(){
                 return {
                     tableData: Array(20).fill({}).map(function(v,i){
                         var item = {
-                            date:'2016-05-02',
-                            name:'王小虎'+i,
-                            phoneNumber:'15390880891'
+                        
                         }
                         return item
                     }),
