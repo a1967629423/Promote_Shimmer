@@ -49,7 +49,7 @@ export class PageController {
         return { userInfo, qr }
     }
 
-    @Get('/userCenter')
+    @Get('/usercenter')
     @Render('userCenter')
     @UseBefore(SessionMiddleware, GetUserMiddleware, GetVendorMiddleware)
     async userCenterPage(@BodyParam('userInfo') userInfo: UserInfo, @BodyParam('vendorInfo') vendorInfo: VendorInfo | null) {
