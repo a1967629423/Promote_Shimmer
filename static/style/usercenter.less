@@ -80,7 +80,7 @@ html {
     -webkit-animation: fa-spin 1 1s ease-in-out;
     animation: fa-spin 1 1s ease-in-out;
 }
-@outsideBase:#efefef;
+@outsideBase:#DCDFE6;
 .outside-container {
     height: 100vh;
     position: absolute;
@@ -99,10 +99,10 @@ html {
     height: 100vh;
     top:0;
     left: 0;
-    transform: translate(-100%,0);
+    pointer-events: none;
     z-index: 10;
     background-color: rgba(0, 0, 0, 0);
-    transition: .3s;
+    transition: background-color .3s;
 }
 .active
 {
@@ -110,10 +110,11 @@ html {
 }
 .active.outside-container
 {
-    box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
 }
 .background.active
 {
+    pointer-events: all;
     background-color: rgba(0, 0, 0, .4);
 }
 
