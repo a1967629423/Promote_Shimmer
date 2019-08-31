@@ -21,8 +21,8 @@ block append main
                             i(class="fa fa-cog  fa-2x",:class="{'fa-spin-once':settingIconAnimation}")
                             el-dropdown-menu(slot="dropdown")
                                 el-dropdown-item  导出当前页
-                                el-dropdown-item  导出所有
-                                el-dropdown-item  刷新数据
+                                el-dropdown-item(@click.native="location.href = '../test1/center/getexcel'") 导出所有
+                                el-dropdown-item(@click.native="location.reload()")  刷新数据
         el-main
                 el-table( :data="visualData",height="70vh",stripe="true",border="true")
                     el-table-column(prop="date" label="日期",sortable)
@@ -61,7 +61,7 @@ block append main
                     currentPage:1,
                     settingIconAnimation:false,
                     outsideActive:false,
-                    paginationShowComponent:['total','prev','pager','next'],
+                    paginationShowComponent:['prev','pager','next'],
                 }
             },
             methods:{
@@ -89,6 +89,10 @@ block append main
                 if(length>20)
                 {
                     paginationShowComponent.push('jumper');
+                }
+                if(this.tableData.length>20)
+                {
+                    paginationShowComponent.push('total');
                 }
             },
 
