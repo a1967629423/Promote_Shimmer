@@ -3,6 +3,7 @@ import fetch from 'node-fetch'
 import { User } from '../models/User';
 import { Vendor } from '../models/Vendor';
 import { Relation } from '../models/Relation';
+import xlsx from 'node-xlsx'
 type api = {
     success: boolean
 }
@@ -151,6 +152,26 @@ export class UserCenterService {
             }
             
             return users;
+        }
+        return null;
+    }
+    async outputXlsx(vendorId:number):Promise<ArrayBuffer|null>
+    {
+        var users = await this.getRelation({vendorId});
+        if(users)
+        {
+            var date = new Date()
+            return xlsx.build([{
+                name:`data-${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}-${date.getHours()}:${date.getMinutes()}`,
+                data:[['日期','姓名','手机号'],...users.map(v=>{
+                    var createdAt = <Date>v.createdAt
+                    return [
+                        `${createdAt.getFullYear()}-${createdAt.getMonth()+1}-${createdAt.getDate()}`,
+                        v.name,
+                        v.telephoneNumber
+                ]
+                })]
+        }],{'!cols':[{wch:30},{wch:20},{wch:30}]})
         }
         return null;
     }
