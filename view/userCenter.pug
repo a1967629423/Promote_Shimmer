@@ -39,9 +39,9 @@ block append main
                     p #{userInfo.nickname}
                 ul
                     li
-                        el-button(type="primary",@click="location.href ='../test1/form'") 表单页面
+                        el-button(type="primary",@click="location.href ='"+locals.webSideRootPath+"form'") 表单页面
                     li
-                        el-button(type="primary",@click="location.href ='../test1/poster'") 海报编辑
+                        el-button(type="primary",@click="location.href ='"+locals.webSideRootPath+"poster'") 海报编辑
         .background(:class="{active:outsideActive}",@click="outsideActive=false")
         -   
             var parsed = relation.map((v)=>{
