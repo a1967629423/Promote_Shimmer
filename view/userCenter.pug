@@ -12,7 +12,7 @@ block append main
             el-header
                 el-row(class="e-header")
                     el-col( :span="8")
-                        .sidebar-active-btn
+                        div(class="sidebar-active-btn",@click="outsideActive=true")
                             i(class="fa fa-navicon  fa-2x")
                     el-col( :span="8",class="text-col")
                         h1 用户填写记录
@@ -20,9 +20,9 @@ block append main
                         el-dropdown(@click.native="settingBtnClick",trigger="click")
                             i(class="fa fa-cog  fa-2x",:class="{'fa-spin-once':settingIconAnimation}")
                             el-dropdown-menu(slot="dropdown")
-                                el-dropdown-item  查看
-                                el-dropdown-item  查看
-                                el-dropdown-item  查看
+                                el-dropdown-item  导出当前页
+                                el-dropdown-item  导出所有
+                                el-dropdown-item  刷新数据
         el-main
                 el-table( :data="visualData",height="70vh",stripe="true",border="true")
                     el-table-column(prop="date" label="日期",sortable)
@@ -31,6 +31,18 @@ block append main
                 .el-pagination-block
                     el-pagination(background,layout="prev,pager,next",:total="tableData.length",:page-size="pageSize",:current-page.sync="currentPage",@current-change="currentChange")
         el-footer(class="e-footer")
+        div(class='outside-container',:class="{active:outsideActive}")
+            .outside-content
+                .headImg
+                    img(src=userInfo.headimgurl)
+                .nickName
+                    p #{userInfo.nickname}
+                ul
+                    li
+                        el-button(type="primary") 查看表单
+                    li
+                        el-button(type="primary") 海报编辑
+        .background(:class="{active:outsideActive}",@click="outsideActive=false")
         -   
             var parsed = relation.map((v)=>{
                 var createdAt = v.createdAt;
@@ -47,7 +59,8 @@ block append main
                     pageSize:10,
                     visualData:[],
                     currentPage:1,
-                    settingIconAnimation:false
+                    settingIconAnimation:false,
+                    outsideActive:false,
                 }
             },
             methods:{
