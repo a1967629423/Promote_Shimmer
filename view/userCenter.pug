@@ -29,7 +29,7 @@ block append main
                     el-table-column(prop="name" label="姓名",sortable)
                     el-table-column(prop="phoneNumber" label="手机号")
                 .el-pagination-block
-                    el-pagination(background,layout="prev,pager,next",:total="tableData.length",:page-size="pageSize",:current-page.sync="currentPage",@current-change="currentChange")
+                    el-pagination(background,:layout="paginationShowComponent.join(',')",:total="tableData.length",:page-size="pageSize",:current-page.sync="currentPage",@current-change="currentChange")
         el-footer(class="e-footer")
         div(class='outside-container',:class="{active:outsideActive}")
             .outside-content
@@ -61,6 +61,7 @@ block append main
                     currentPage:1,
                     settingIconAnimation:false,
                     outsideActive:false,
+                    paginationShowComponent:['total','prev','pager','next'],
                 }
             },
             methods:{
@@ -84,5 +85,10 @@ block append main
             {
                 this.pageSize = Math.floor(window.innerHeight*0.7/50);
                 this.sliceData();
+                var datalength  = this.tableData.length / this.pageSize;
+                if(length>20)
+                {
+                    paginationShowComponent.push('jumper');
+                }
             },
         })
